@@ -2,7 +2,10 @@ import random
 from random import randint
 
 import pygame as pg
-
+from pygame.math import Vector2 as vec
+from obstacle import Obstacle
+from ground import Ground
+from random import randint, sample, choice
 from dinosaur import Dinosaur
 from ground import Ground
 from obstacle import Cacti, Bird
@@ -24,7 +27,18 @@ class Game:
 
         self.dinoScore = 0
         self.scoreTimer = 0
+        self.speedUpTimer = 0
+        self.obstacleSpeed = -4
         self.clock = pg.time.Clock()
+    
+    def speedUp(self):
+        self.speedUpTimer += 1
+        if self.speedUpTimer >= 10000//60:
+            self.obstacleSpeed -= 0.2
+            for o in self.obstacleList:
+                o.vel = vec(self.obstacleSpeed, 0)
+            self.speedUpTimer = 0
+
 
     def increaseScore(self):
         self.scoreTimer += 1
@@ -67,7 +81,8 @@ class Game:
 
         if keys[pg.K_SPACE]:
             self.dino.jump()
-
+        self.speedUp()
+        print(self.obstacleSpeed)
         self.updateObstacles()
         self.increaseScore()
         self.dino.move(self.ground.y)
