@@ -1,12 +1,11 @@
 import pygame as pg
-
+from random import randint
 
 class Obstacle:
-    def __init__(self, pos: tuple, size: tuple, speed: tuple, o_type=0) -> None:
+    def __init__(self, pos: tuple, size: tuple, speed: tuple, colour: tuple) -> None:
         self.pos, self.size = pg.math.Vector2(*pos), size
         self.rect = pg.Rect(*pos, *self.size)
-        self.o_type = o_type
-        self.colour = (50, 50, 200) if self.o_type == 1 else (50, 200, 50)  # bird else cacti
+        self.colour = colour  # bird else cacti
         self.vel = pg.math.Vector2(*speed)
 
     def move(self) -> None:
@@ -18,10 +17,16 @@ class Obstacle:
 
 
 class Cacti(Obstacle):
-    def __init__(self, pos: tuple, size: tuple, speed: tuple) -> None:
-        super().__init__(pos, size, speed, 0)
+    def __init__(self, x_pos, ground_y) -> None:
+        obstacle_size = 20, randint(40, 60)
+        obstacle_pos = x_pos, ground_y - obstacle_size[1]
+        colour = (50, 200, 50)
+        super().__init__(obstacle_pos, obstacle_size, (-4, 0), colour)
 
 
 class Bird(Obstacle):
-    def __init__(self, pos: tuple, size: tuple, speed: tuple) -> None:
-        super().__init__(pos, size, speed, 1)
+    def __init__(self, x_pos, ground_y) -> None:
+        obstacle_size = 40, 20
+        obstacle_pos = x_pos, ground_y - 20 - 25 * randint(0, 2)
+        colour = (50, 50, 200)
+        super().__init__(obstacle_pos, obstacle_size, (-4, 0), colour)
