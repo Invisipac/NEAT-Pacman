@@ -67,6 +67,7 @@ class Game:
 
     def updateObstacles(self):
         self.spawnObstacles()
+        self.speedUp()
 
         for o in self.obstacleList[::-1]:
             o.move()
