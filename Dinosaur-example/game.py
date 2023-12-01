@@ -51,11 +51,11 @@ class Game:
     def spawnObstacles(self):
         if len(self.obstacleList) < self.maxObstacles:
             o_type = 0 if random.randint(0, 100) < 90 else 1
-            difficulty = 1000
+            difficulty = 500
             if len(self.obstacleList) > 0:
                 lastX = self.obstacleList[-1].pos.x + self.obstacleList[-1].size[0]
                 dist = self.W - lastX
-                offset = randint(dist, dist + difficulty) if dist > 0 else randint(100, 100 + difficulty)
+                offset = randint(dist, dist + difficulty) if dist > 0 else randint(400, 400 + difficulty)
             else:
                 lastX = self.W
                 offset = randint(100, 100 + difficulty)
