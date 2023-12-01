@@ -34,7 +34,7 @@ class Game:
     def speedUp(self):
         self.speedUpTimer += 1
         if self.speedUpTimer >= 10000//60:
-            self.obstacleSpeed -= 0.1
+            self.obstacleSpeed -= 0.2
             for o in self.obstacleList:
                 o.vel = vec(self.obstacleSpeed, 0)
             self.speedUpTimer = 0
