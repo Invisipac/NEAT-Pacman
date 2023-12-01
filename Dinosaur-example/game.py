@@ -34,7 +34,7 @@ class Game:
     def speedUp(self):
         self.speedUpTimer += 1
         if self.speedUpTimer >= 10000//60:
-            self.obstacleSpeed -= 0.2
+            self.obstacleSpeed -= 0.1
             for o in self.obstacleList:
                 o.vel = vec(self.obstacleSpeed, 0)
             self.speedUpTimer = 0
@@ -50,8 +50,8 @@ class Game:
 
     def spawnObstacles(self):
         if len(self.obstacleList) < self.maxObstacles:
-            o_type = 0 if random.randint(0, 100) < 75 else 1
-            difficulty = 400
+            o_type = 0 if random.randint(0, 100) < 90 else 1
+            difficulty = 1000
             if len(self.obstacleList) > 0:
                 lastX = self.obstacleList[-1].pos.x + self.obstacleList[-1].size[0]
                 dist = self.W - lastX
