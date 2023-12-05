@@ -1,11 +1,7 @@
 import random
-from random import randint
-
 import pygame as pg
 from pygame.math import Vector2 as vec
-from obstacle import Obstacle
-from ground import Ground
-from random import randint, sample, choice
+from random import randint
 from dinosaur import Dinosaur
 from ground import Ground
 from obstacle import Cacti, Bird
