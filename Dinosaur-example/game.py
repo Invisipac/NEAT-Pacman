@@ -97,10 +97,6 @@ class Game:
                     # dino.kill()
 
     def update(self):
-        keys = pg.key.get_pressed()
-
-        # if keys[pg.K_SPACE]:
-        #     self.dino.jump()
         self.speedUp()
         self.updateObstacles()
         self.increaseScore()
@@ -113,7 +109,6 @@ class Game:
 
             if output[0] > 0.5:
                 dino.jump()
-                # self.ge[i].fitness -= 0.05
 
     def redraw(self):
         for o in self.obstacleList:
@@ -174,7 +169,7 @@ class Game:
                 self.update()
                 self.redraw()
                 pg.display.update()
-            self.clock.tick(144)
+            self.clock.tick(60)
 
 
 
@@ -191,3 +186,4 @@ class Game:
 
         # get the winner of the population
         winner = p.run(self.main, 50)  # fitness function, num of generations
+        print(winner)

@@ -4,11 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="80617755-e6c2-44ef-8c30-2a2fa3c86cd1" name="Changes" comment="remove imports">
-      <change afterPath="$PROJECT_DIR$/Dinosaur-example/config.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Dinosaur-example/dinosaur.py" beforeDir="false" afterPath="$PROJECT_DIR$/Dinosaur-example/dinosaur.py" afterDir="false" />
+    <list default="true" id="5ae8858b-07d9-417c-809e-aa0871aa4f0d" name="Changes" comment="remove imports">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Dinosaur-example/config.txt" beforeDir="false" afterPath="$PROJECT_DIR$/Dinosaur-example/config.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Dinosaur-example/game.py" beforeDir="false" afterPath="$PROJECT_DIR$/Dinosaur-example/game.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Dinosaur-example/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/Dinosaur-example/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -40,7 +39,7 @@
                 <list>
                   <RecentBranch>
                     <option name="branchName" value="ariel-neat-try" />
-                    <option name="lastUsedInstant" value="1701787739" />
+                    <option name="lastUsedInstant" value="1702234770" />
                   </RecentBranch>
                   <RecentBranch>
                     <option name="branchName" value="invis-neat-try" />
@@ -181,7 +180,7 @@
     <option name="LAST_COMMIT_MESSAGE" value="remove imports" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/NEAT_Pacman$main.coverage" NAME="main Coverage Results" MODIFIED="1702233914123" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Dinosaur-example" />
-    <SUITE FILE_PATH="coverage/NEAT_Pacman$game.coverage" NAME="game Coverage Results" MODIFIED="1701100113213" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Dinosaur-example" />
+    <SUITE FILE_PATH="coverage/NEAT_Pacman$main.coverage" NAME="main Coverage Results" MODIFIED="1702244172124" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Dinosaur-example" />
+    <SUITE FILE_PATH="coverage/NEAT_Pacman$game.coverage" NAME="game Coverage Results" MODIFIED="1702234678628" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Dinosaur-example" />
   </component>
 </project>
