@@ -117,14 +117,16 @@ class Game:
         for dino in self.dinos:
             dino.draw(self.screen)
 
-    def main(self, genomes, config):
+    def resetGen(self):
         self.nets = []
         self.ge = []
         self.dinos = []
         self.obstacleList = []
         self.dinoScore = 0
         self.obstacleSpeed = -4
-
+    def main(self, genomes, config):
+        self.resetGen()
+        
         for _, g in genomes:
             net = neat.nn.FeedForwardNetwork.create(g, config)
             self.nets.append(net)
