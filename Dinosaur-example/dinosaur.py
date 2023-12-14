@@ -44,4 +44,5 @@ class Dinosaur:
             
     def draw(self, screen: pg.Surface):
         if not self.dead:
-            pg.draw.rect(screen, (255, 0, 0), self.rect)  
+            pg.draw.rect(screen, (255, 0, 0), self.rect)
+            pg.draw.rect(screen, (0, 0, 0), self.rect, 2)

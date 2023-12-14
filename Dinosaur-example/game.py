@@ -1,7 +1,10 @@
 import random
+from random import randint
+
+import neat
 import pygame as pg
 from pygame.math import Vector2 as vec
-from random import randint, sample, choice
+
 from dinosaur import Dinosaur
 from ground import Ground
 from obstacle import Cacti, Bird
@@ -16,7 +19,12 @@ class Game:
         self.screen = screen
         self.W, self.H = screen.get_width(), screen.get_height()
         self.ground = Ground(self.H - 100)
-        self.dino = Dinosaur(20, self.ground.y)
+        # self.dino = Dinosaur(20, self.ground.y)
+        self.dinos = []
+        self.nets = []
+        self.ge = []
+        self.gen = 0
+        self.speed = 1
 
         self.obstacleList = []
         self.maxObstacles = 15
@@ -26,35 +34,45 @@ class Game:
         self.speedUpTimer = 0
         self.obstacleSpeed = -4
         self.clock = pg.time.Clock()
-    
+
     def speedUp(self):
         self.speedUpTimer += 1
-        if self.speedUpTimer >= 10000//60:
+        if self.speedUpTimer >= 10000 // 60:
             self.obstacleSpeed -= 0.2
             for o in self.obstacleList:
                 o.vel = vec(self.obstacleSpeed, 0)
             self.speedUpTimer = 0
 
-
     def increaseScore(self):
         self.scoreTimer += 1
-        if self.scoreTimer >= 100 and not self.dino.dead:
+        if self.scoreTimer >= 100:
             self.dinoScore += 1
+            for g in self.ge:
+                g.fitness += 0.2
             self.scoreTimer = 0
         score = textFont.render(f"Score: {self.dinoScore}", 1, (0, 0, 0))
-        self.screen.blit(score, (self.W - 150, 30))
+        self.screen.blit(score, (self.W - 200, 30))
+
+        gen = textFont.render(f"Gen: {self.gen}", 1, (0, 0, 0))
+        self.screen.blit(gen, (self.W - 200, 60))
+
+        dinos = textFont.render(f"Dinos alive: {len(self.dinos)}", 1, (0, 0, 0))
+        self.screen.blit(dinos, (self.W - 200, 90))
+
+        speed = textFont.render(f"Game speed: {self.speed}", 1, (0, 0, 0))
+        self.screen.blit(speed, (self.W - 200, 120))
 
     def spawnObstacles(self):
         if len(self.obstacleList) < self.maxObstacles:
             o_type = 0 if random.randint(0, 100) < 90 else 1
-            difficulty = 500
+            difficulty = 500 - 25 * self.obstacleSpeed
             if len(self.obstacleList) > 0:
                 lastX = self.obstacleList[-1].pos.x + self.obstacleList[-1].size[0]
                 dist = self.W - lastX
-                offset = randint(dist, dist + difficulty) if dist > 0 else randint(400, 400 + difficulty)
+                offset = randint(int(dist), int(dist + difficulty)) if dist > 0 else randint(int(difficulty), int(difficulty*2))
             else:
                 lastX = self.W
-                offset = randint(100, 100 + difficulty)
+                offset = randint(100, 100 + int(difficulty))
 
             if o_type == 0:
                 self.obstacleList.append(Cacti(lastX + offset, self.ground.y))
@@ -70,37 +88,104 @@ class Game:
             if o.pos.x < -o.size[0]:
                 self.obstacleList.remove(o)
 
-            if self.dino.collide(o):
-                self.dino.kill()
+            for i, dino in enumerate(self.dinos):
+                if dino.collide(o):
+                    self.ge[i].fitness -= 1
+                    self.dinos.pop(i)
+                    self.nets.pop(i)
+                    self.ge.pop(i)
+                    # dino.kill()
 
     def update(self):
-        keys = pg.key.get_pressed()
-
-        if keys[pg.K_SPACE]:
-            self.dino.jump()
         self.speedUp()
-        print(self.obstacleSpeed)
         self.updateObstacles()
         self.increaseScore()
-        self.dino.move(self.ground.y)
+        for i, dino in enumerate(self.dinos):
+            dino.move(self.ground.y)
+
+            output = self.nets[i].activate((dino.pos.x + dino.w, dino.pos.y + dino.h, self.obstacleList[0].pos.x,
+                                            self.obstacleList[0].pos.y,
+                                            self.obstacleList[0].pos.y + self.obstacleList[0].size[1], self.obstacleSpeed))
+
+            if output[0] > 0.5:
+                dino.jump()
 
     def redraw(self):
         for o in self.obstacleList:
             o.draw(self.screen)
         self.ground.draw(self.screen, self.W)
-        self.dino.draw(self.screen)
+        for dino in self.dinos:
+            dino.draw(self.screen)
 
-    def main(self):
+    def resetGen(self):
+        self.nets = []
+        self.ge = []
+        self.dinos = []
+        self.obstacleList = []
+        self.dinoScore = 0
+        self.obstacleSpeed = -4
+    def main(self, genomes, config):
+        self.resetGen()
+        
+        for _, g in genomes:
+            net = neat.nn.FeedForwardNetwork.create(g, config)
+            self.nets.append(net)
+            self.dinos.append(Dinosaur(20, self.ground.y))
+            g.fitness = 0
+            self.ge.append(g)
+
         run = True
         while run:
             for e in pg.event.get():
                 if e.type == pg.QUIT:
                     run = False
+                    pg.quit()
 
-            self.screen.fill((255, 255, 255))
-            self.update()
-            self.redraw()
+            for i in range(self.speed):
+                keys = pg.key.get_pressed()
+                if keys[pg.K_1]:
+                    self.speed = 1
+                    break
+                elif keys[pg.K_2]:
+                    self.speed = 10
+                    break
+                elif keys[pg.K_3]:
+                    self.speed = 50
+                    break
+                elif keys[pg.K_4]:
+                    self.speed = 100
+                    break
+                elif keys[pg.K_5]:
+                    self.speed = 500
+                    break
+                elif keys[pg.K_6]:
+                    self.speed = 10000
+                    break
+                if len(self.dinos) == 0:
+                    run = False
+                    self.gen += 1
+                    print(f"Final Score: {self.dinoScore}")
+                    break
+
+                self.screen.fill((255, 255, 255))
+                self.update()
+                self.redraw()
+                pg.display.update()
             self.clock.tick(60)
-            pg.display.update()
 
-        pg.quit()
+
+
+    def run(self, config_path):
+        config = neat.config.Config(neat.DefaultGenome, neat.DefaultReproduction, neat.DefaultSpeciesSet,
+                                    neat.DefaultStagnation, config_path)
+        # population
+        p = neat.Population(config)
+
+        # stats about population - not needed
+        p.add_reporter(neat.StdOutReporter(True))
+        stats = neat.StatisticsReporter()
+        p.add_reporter(stats)
+
+        # get the winner of the population
+        winner = p.run(self.main, 50)  # fitness function, num of generations
+        print(winner)
