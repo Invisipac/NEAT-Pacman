@@ -35,6 +35,8 @@ class Game:
         self.obstacleSpeed = -4
         self.clock = pg.time.Clock()
 
+        self.p = None
+
     def speedUp(self):
         self.speedUpTimer += 1
         if self.speedUpTimer >= 10000 // 60:
@@ -139,6 +141,8 @@ class Game:
             for e in pg.event.get():
                 if e.type == pg.QUIT:
                     run = False
+                    print(self.p.best_genome)
+                    # return/
                     pg.quit()
 
             for i in range(self.speed):
@@ -179,13 +183,14 @@ class Game:
         config = neat.config.Config(neat.DefaultGenome, neat.DefaultReproduction, neat.DefaultSpeciesSet,
                                     neat.DefaultStagnation, config_path)
         # population
-        p = neat.Population(config)
+        self.p = neat.Population(config)
 
         # stats about population - not needed
-        p.add_reporter(neat.StdOutReporter(True))
+        self.p.add_reporter(neat.StdOutReporter(True))
         stats = neat.StatisticsReporter()
-        p.add_reporter(stats)
+        self.p.add_reporter(stats)
 
         # get the winner of the population
-        winner = p.run(self.main, 50)  # fitness function, num of generations
+        winner = self.p.run(self.main, 50)
+        print(self.p.best_genome)  # fitness function, num of generations
         print(winner)
