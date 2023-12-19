@@ -9,6 +9,8 @@ from dinosaur import Dinosaur
 from ground import Ground
 from obstacle import Cacti, Bird
 
+import pickle
+
 pg.font.init()
 
 textFont = pg.font.SysFont('Comic Sans', 20)
@@ -23,6 +25,7 @@ class Game:
         self.dinos = []
         self.nets = []
         self.ge = []
+        self.bestGenome = []
         self.gen = 0
         self.speed = 1
 
@@ -35,8 +38,9 @@ class Game:
         self.obstacleSpeed = -4
         self.clock = pg.time.Clock()
 
+        self.config = None
         self.p = None
-
+        self.replay = False
     def speedUp(self):
         self.speedUpTimer += 1
         if self.speedUpTimer >= 10000 // 60:
@@ -126,8 +130,12 @@ class Game:
         self.obstacleList = []
         self.dinoScore = 0
         self.obstacleSpeed = -4
+
     def main(self, genomes, config):
         self.resetGen()
+        
+        if self.replay:
+            genomes = self.bestGenome
         
         for _, g in genomes:
             net = neat.nn.FeedForwardNetwork.create(g, config)
@@ -141,8 +149,10 @@ class Game:
             for e in pg.event.get():
                 if e.type == pg.QUIT:
                     run = False
-                    print(self.p.best_genome)
-                    # return/
+                    best = self.p.best_genome
+                    with open("winner.pkl", "wb") as f:
+                        pickle.dump(best, f)
+                        f.close()
                     pg.quit()
 
             for i in range(self.speed):
@@ -165,7 +175,7 @@ class Game:
                 elif keys[pg.K_6]:
                     self.speed = 10000
                     break
-                if len(self.dinos) == 0:
+                if len(self.dinos) == 0 and not self.replay:
                     run = False
                     self.gen += 1
                     print(f"Final Score: {self.dinoScore}")
@@ -178,12 +188,24 @@ class Game:
             self.clock.tick(60)
 
 
+    def replayGenome(self, config_path, genome_path = "winner.pkl"):
+        self.config = neat.config.Config(neat.DefaultGenome, neat.DefaultReproduction, neat.DefaultSpeciesSet,
+                                    neat.DefaultStagnation, config_path)
+        
+        with open (genome_path, "rb") as f:
+            genome = pickle.load(f)
+        
+        self.bestGenome = [(1, genome)]
+        self.replay = True
+        self.p = neat.Population(self.config)
+        self.p.run(self.main, 1)
+
 
     def run(self, config_path):
-        config = neat.config.Config(neat.DefaultGenome, neat.DefaultReproduction, neat.DefaultSpeciesSet,
+        self.config = neat.config.Config(neat.DefaultGenome, neat.DefaultReproduction, neat.DefaultSpeciesSet,
                                     neat.DefaultStagnation, config_path)
         # population
-        self.p = neat.Population(config)
+        self.p = neat.Population(self.config)
 
         # stats about population - not needed
         self.p.add_reporter(neat.StdOutReporter(True))
