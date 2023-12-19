@@ -130,7 +130,10 @@ class Game:
         self.obstacleList = []
         self.dinoScore = 0
         self.obstacleSpeed = -4
-
+    def saveGenome(self, best):
+        with open("winner.pkl", "wb") as f:
+            pickle.dump(best, f)
+            f.close()
     def main(self, genomes, config):
         self.resetGen()
         
@@ -144,15 +147,14 @@ class Game:
             g.fitness = 0
             self.ge.append(g)
 
+        
         run = True
         while run:
             for e in pg.event.get():
                 if e.type == pg.QUIT:
                     run = False
-                    best = self.p.best_genome
-                    with open("winner.pkl", "wb") as f:
-                        pickle.dump(best, f)
-                        f.close()
+                    if not self.replay:
+                        self.saveGenome(self.p.best_genome)
                     pg.quit()
 
             for i in range(self.speed):
@@ -214,5 +216,5 @@ class Game:
 
         # get the winner of the population
         winner = self.p.run(self.main, 50)
-        print(self.p.best_genome)  # fitness function, num of generations
+        self.saveGenome(winner)  # fitness function, num of generations
         print(winner)
