@@ -182,6 +182,9 @@ class Game:
                     self.gen += 1
                     print(f"Final Score: {self.dinoScore}")
                     break
+                elif len(self.dinos) == 0 and self.replay:
+                    run = False
+                    return
 
                 self.screen.fill((255, 255, 255))
                 self.update()
