@@ -128,12 +128,12 @@ class Pacman:
 
         if timer == 0:
             moved = False
-            if self.wannabe_dir == "UP" and 0 < self.pos[0] < WIDTH and 0 < self.pos[1] < HEIGHT:
+            if self.wannabe_dir == "UP" and 0 <= self.pos[0] <= WIDTH and 0 <= self.pos[1] <= HEIGHT:
                 if self.map_locs.y > 0 and map[int(self.map_locs.y - 1)][int(self.map_locs.x)] in ["*", "-"] and can_turn[1]:
                     self.pos.y -= RATIO[1] / self.speed
                     self.dir = "UP"
                     moved = True
-            elif self.wannabe_dir == "DOWN" and 0 < self.pos[0] < WIDTH and 0 < self.pos[1] < HEIGHT:
+            elif self.wannabe_dir == "DOWN" and 0 <= self.pos[0] <= WIDTH and 0 <= self.pos[1] <= HEIGHT:
                 if self.map_locs.y < len(map) - 1 and map[int(self.map_locs.y + 1)][int(self.map_locs.x)] in ["*", "-"] and can_turn[1]:
                     self.pos.y += RATIO[1] / self.speed
                     self.dir = "DOWN"
