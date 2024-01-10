@@ -1,5 +1,3 @@
-import pygame as pg
-from node import Node
 from nodegroup import NodeGroup
 from pacman import Pacman
 from variables import *
@@ -10,7 +8,7 @@ class Game:
         self.pacman = Pacman((5, 11), 10)
         self.nodes = NodeGroup()
         self.nodes.setupTestNodes(map)
-        self.screen =  pg.display.set_mode((WIDTH, HEIGHT))
+        self.screen = pg.display.set_mode((WIDTH, HEIGHT))
     
     def main(self):
         timer = 0

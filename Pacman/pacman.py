@@ -1,27 +1,24 @@
-import pygame
-from node import Node
-from nodegroup import NodeGroup
 from variables import *
 
 class Pacman:
     def __init__(self, pos, speed):
-        self.pos = pygame.Vector2(pos[0] * RATIO[0], pos[1] * RATIO[1])
-        self.map_locs = pygame.Vector2(*pos)
+        self.pos = pg.Vector2(pos[0] * RATIO[0], pos[1] * RATIO[1])
+        self.map_locs = pg.Vector2(*pos)
         self.size = 15
         self.dir = "UP"
         self.wannabe_dir = "UP"
         self.speed = speed
 
     def show(self, display):
-        pygame.draw.circle(display, (200, 200, 50), (self.pos.x, self.pos.y), self.size)
+        pg.draw.circle(display, (200, 200, 50), (self.pos.x, self.pos.y), self.size)
         if self.wannabe_dir == "UP":
-            pygame.draw.circle(display, (50, 50, 200), (self.pos.x, self.pos.y - 25), self.size // 2)
+            pg.draw.circle(display, (50, 50, 200), (self.pos.x, self.pos.y - 25), self.size // 2)
         elif self.wannabe_dir == "DOWN":
-            pygame.draw.circle(display, (50, 50, 200), (self.pos.x, self.pos.y + 25), self.size // 2)
+            pg.draw.circle(display, (50, 50, 200), (self.pos.x, self.pos.y + 25), self.size // 2)
         elif self.wannabe_dir == "LEFT":
-            pygame.draw.circle(display, (50, 50, 200), (self.pos.x - 25, self.pos.y), self.size // 2)
+            pg.draw.circle(display, (50, 50, 200), (self.pos.x - 25, self.pos.y), self.size // 2)
         elif self.wannabe_dir == "RIGHT":
-            pygame.draw.circle(display, (50, 50, 200), (self.pos.x + 25, self.pos.y), self.size // 2)
+            pg.draw.circle(display, (50, 50, 200), (self.pos.x + 25, self.pos.y), self.size // 2)
 
     def update(self, keys, timer):
         can_turn = [False, False]
@@ -37,13 +34,13 @@ class Pacman:
         if self.map_locs.x == 17:
             self.map_locs.x = 16
 
-        if keys[pygame.K_w]:
+        if keys[pg.K_w]:
             self.wannabe_dir = "UP"
-        elif keys[pygame.K_s]:
+        elif keys[pg.K_s]:
             self.wannabe_dir = "DOWN"
-        elif keys[pygame.K_a]:
+        elif keys[pg.K_a]:
             self.wannabe_dir = "LEFT"
-        elif keys[pygame.K_d]:
+        elif keys[pg.K_d]:
             self.wannabe_dir = "RIGHT"
 
         if timer == 0:

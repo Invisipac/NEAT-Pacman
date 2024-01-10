@@ -1,4 +1,3 @@
-import pygame
 from node import Node
 from variables import *
 
