@@ -31,8 +31,8 @@ class Pacman:
 
         if self.map_locs.x == -1:
             self.map_locs.x = 0
-        if self.map_locs.x == 17:
-            self.map_locs.x = 16
+        if self.map_locs.x == GRID_SIZE[1] + 1:
+            self.map_locs.x = GRID_SIZE[1]
 
         if keys[pg.K_w]:
             self.wannabe_dir = "UP"
@@ -61,10 +61,10 @@ class Pacman:
                     self.dir = "LEFT"
                     moved = True
                 if self.map_locs.x == 0 and self.map_locs.y == 9:
-                    if self.pos.x > -25:
+                    if self.pos.x > -RATIO[0]/2:
                         self.pos.x -= RATIO[0] / self.speed
                     else:
-                        self.pos.x = WIDTH + 50
+                        self.pos.x = WIDTH + RATIO[0]
                     self.dir = "LEFT"
                     moved = True
             elif self.wannabe_dir == "RIGHT":
@@ -73,10 +73,10 @@ class Pacman:
                     self.dir = "RIGHT"
                     moved = True
                 if self.map_locs.x == 16 and self.map_locs.y == 9:
-                    if self.pos.x < WIDTH + 25:
+                    if self.pos.x < WIDTH + RATIO[0]/2:
                         self.pos.x += RATIO[0] / self.speed
                     else:
-                        self.pos.x = -50
+                        self.pos.x = -RATIO[0]
                     self.dir = "RIGHT"
                     moved = True
             if not moved:
@@ -90,12 +90,12 @@ class Pacman:
                     if self.map_locs.x > 0 and map[int(self.map_locs.y)][int(self.map_locs.x - 1)] in ["*", "-"] and can_turn[0]:
                         self.pos.x -= RATIO[0] / self.speed
                     if self.map_locs.x == 0 and self.map_locs.y == 9:
-                        self.pos.x = WIDTH + 50
+                        self.pos.x = WIDTH + RATIO[0]
                 elif self.dir == "RIGHT":
                     if self.map_locs.x < len(map[0]) - 1 and map[int(self.map_locs.y)][int(self.map_locs.x + 1)] in ["*", "-"] and can_turn[0]:
                         self.pos.x += RATIO[0] / self.speed
                     if self.map_locs.x == 16 and self.map_locs.y == 9:
-                        self.pos.x = -50
+                        self.pos.x = -RATIO[0]
 
-        print(self.pos, self.map_locs, can_turn)
-        print(f"dir: {self.dir}, wannabe: {self.wannabe_dir}")
+        # print(self.pos, self.map_locs, can_turn)
+        # print(f"dir: {self.dir}, wannabe: {self.wannabe_dir}")

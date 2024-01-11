@@ -23,8 +23,12 @@ class Game:
                     run = False
             self.pacman.update(pg.key.get_pressed(), timer)
             self.screen.fill((0, 0, 0))
+            for i in range(0, GRID_SIZE[0]+1):
+                for j in range(0, GRID_SIZE[1]+1):
+                    pg.draw.rect(self.screen, (0, 150, 0), (i*RATIO[0]-RATIO[0]/2, j*RATIO[1]-RATIO[1]/2, RATIO[0], RATIO[1]), 2)
             self.nodes.show(self.screen)
             self.pacman.show(self.screen)
+
             pg.display.update()
             clock.tick(30)
 
