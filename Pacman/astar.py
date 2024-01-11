@@ -15,7 +15,12 @@ for i in range(n):
     for j in range(n):
         grid[i].append(Node(j*W/n, i*H/n))
 
+grid[2][1].obstacle = True
+grid[2][2].obstacle = True
+grid[1][2].obstacle = True
+grid[2][0].obstacle = True
 
+grid[4][2].obstacle = True
 
 def reconstruct(cameFrom: dict, current):
     totalPath = [current]
@@ -26,13 +31,13 @@ def reconstruct(cameFrom: dict, current):
 
 def find_neighbours(i, j):
     neighbours = []
-    if i - 1 >=0:
+    if i - 1 >=0 and not grid[i - 1][j].obstacle:
         neighbours.append((i - 1, j))
-    if i + 1 <= n - 1:
+    if i + 1 <= n - 1 and not grid[i + 1][j].obstacle:
         neighbours.append((i + 1, j))
-    if j - 1 >= 0:
+    if j - 1 >= 0 and not grid[i][j - 1].obstacle:
         neighbours.append((i, j - 1))
-    if j + 1 <= n-1:
+    if j + 1 <= n-1 and not grid[i][j + 1].obstacle:
         neighbours.append((i, j + 1))
     
     return neighbours
@@ -73,8 +78,8 @@ def astar(start, goal, h = h):
 
     return -1
 
-Astar = astar((0, 0), ((n - 1) - 2, (n - 1) - 3))
-
+Astar = astar((0, 0), ((n - 1), (n - 1)))
+print(Astar)
 run = True
 
 while run:
@@ -86,8 +91,10 @@ while run:
 
     for i in range(5):
         for j in range(5):
-            if (i, j) not in Astar:
+            if (i, j) not in Astar and not grid[i][j].obstacle:
                 pg.draw.rect(screen, (255, 255, 255), (grid[i][j].pos.x, grid[i][j].pos.y, W/n, H/n), 1)
+            elif grid[i][j].obstacle:
+                pg.draw.rect(screen, (255, 0, 0), (grid[i][j].pos.x + 0.5, grid[i][j].pos.y + 0.5, W/n - 1, H/n  - 1))
             else:
                 pg.draw.rect(screen, (0, 255, 0), (grid[i][j].pos.x + 0.5, grid[i][j].pos.y + 0.5, W/n - 1, H/n  - 1))
     
