@@ -3,6 +3,7 @@ class Node:
     def __init__(self, x, y):
         self.pos = pg.Vector2(x, y)
         self.neighbors = {}
+        self.obstacle = False
 
     def show(self, display):
         for n in self.neighbors.keys():

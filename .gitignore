@@ -6,6 +6,8 @@ __pycache__/
 # C extensions
 *.so
 .idea/
+
+launch.json
 # Distribution / packaging
 .Python
 build/
