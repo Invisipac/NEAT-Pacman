@@ -4,6 +4,7 @@ from collections import deque
 from queue import PriorityQueue
 import math
 from variables import OBSTACLES, GRID_SIZE, map
+from minHeap import MinHeap
 grid = []
 
 W = 800
@@ -47,7 +48,9 @@ def h(i, j, goal):
     return (goal[1] - j)**2 + (goal[0] - i)**2
 
 def astar(start, goal, grid, h = h):
-    openSet = [start]
+    #openSet = [start]
+    openSet = MinHeap()
+    openSet.push(start, 0)
     closedSet = []
     cameFrom = {}
 
@@ -57,19 +60,19 @@ def astar(start, goal, grid, h = h):
     fScore = {}
     fScore[start] = h(*start, goal=goal)
 
-    while len(openSet) != 0:
-        current = openSet[0]
-        
+    while openSet.size() != 0:
+        element = openSet.pop()
+        current = element[0]
         if current == goal:
             return reconstruct(cameFrom, current)
     
-        openSet.remove(current)
+        openSet.remove(element)
         closedSet.append(current)
 
         for n in find_neighbours(grid, current[0], current[1]):
             tempG = gScore[current] + 1
             if n not in closedSet:
-                if n in openSet:
+                if openSet.is_element(n):
                     if tempG < gScore[n]:
                         cameFrom[n] = current
                         gScore[n] = tempG
@@ -77,12 +80,13 @@ def astar(start, goal, grid, h = h):
                 else:
                     gScore[n] = tempG
                     cameFrom[n] = current
+                    fScore[n] = tempG + h(*n, goal=goal)
                     #if n not in closedSet:
-                    openSet.append(n)
+                    openSet.push(n, fScore[n])
 
     return -1
 
-# Astar = astar((8, 1), (23, 13), map)
+# Astar = astar((8, 1), (8, 3), map)
 # print(Astar)
 # # run = True
 
