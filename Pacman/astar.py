@@ -3,6 +3,7 @@ import pygame as pg
 from collections import deque
 from queue import PriorityQueue
 import math
+from variables import OBSTACLES, GRID_SIZE, map
 grid = []
 
 W = 800
@@ -29,15 +30,15 @@ def reconstruct(cameFrom: dict, current):
         totalPath.append(current)
     return totalPath
 
-def find_neighbours(i, j):
+def find_neighbours(grid, i, j):
     neighbours = []
-    if i - 1 >=0 and not grid[i - 1][j].obstacle:
+    if i - 1 >=0 and not grid[i - 1][j] in OBSTACLES:
         neighbours.append((i - 1, j))
-    if i + 1 <= n - 1 and not grid[i + 1][j].obstacle:
+    if i + 1 <= GRID_SIZE[1] - 1 and not grid[i + 1][j] in OBSTACLES:
         neighbours.append((i + 1, j))
-    if j - 1 >= 0 and not grid[i][j - 1].obstacle:
+    if j - 1 >= 0 and not grid[i][j - 1] in OBSTACLES:
         neighbours.append((i, j - 1))
-    if j + 1 <= n-1 and not grid[i][j + 1].obstacle:
+    if j + 1 <= GRID_SIZE[0] - 1 and not grid[i][j + 1] in OBSTACLES:
         neighbours.append((i, j + 1))
     
     return neighbours
@@ -45,9 +46,9 @@ def find_neighbours(i, j):
 def h(i, j, goal):
     return (goal[1] - j)**2 + (goal[0] - i)**2
 
-def astar(start, goal, h = h):
+def astar(start, goal, grid, h = h):
     openSet = [start]
-
+    closedSet = []
     cameFrom = {}
 
     gScore = {}
@@ -63,42 +64,45 @@ def astar(start, goal, h = h):
             return reconstruct(cameFrom, current)
     
         openSet.remove(current)
+        closedSet.append(current)
 
-        for n in find_neighbours(current[0], current[1]):
+        for n in find_neighbours(grid, current[0], current[1]):
             tempG = gScore[current] + 1
-            if n in openSet:
-                if tempG < gScore[n]:
-                    cameFrom[n] = current
+            if n not in closedSet:
+                if n in openSet:
+                    if tempG < gScore[n]:
+                        cameFrom[n] = current
+                        gScore[n] = tempG
+                        fScore[n] = tempG + h(*n, goal=goal)
+                else:
                     gScore[n] = tempG
-                    fScore[n] = tempG + h(*n, goal=goal)
-            else:
-                gScore[n] = tempG
-                cameFrom[n] = current
-                openSet.append(n)
+                    cameFrom[n] = current
+                    #if n not in closedSet:
+                    openSet.append(n)
 
     return -1
 
-Astar = astar((0, 0), ((n - 1), (n - 1)))
-print(Astar)
-run = True
+# Astar = astar((8, 1), (23, 13), map)
+# print(Astar)
+# # run = True
 
-while run:
-    for e in pg.event.get():
-        if e.type == pg.QUIT:
-            run = False
+# while run:
+#     for e in pg.event.get():
+#         if e.type == pg.QUIT:
+#             run = False
 
-    screen.fill(0)
+#     screen.fill(0)
 
-    for i in range(5):
-        for j in range(5):
-            if (i, j) not in Astar and not grid[i][j].obstacle:
-                pg.draw.rect(screen, (255, 255, 255), (grid[i][j].pos.x, grid[i][j].pos.y, W/n, H/n), 1)
-            elif grid[i][j].obstacle:
-                pg.draw.rect(screen, (255, 0, 0), (grid[i][j].pos.x + 0.5, grid[i][j].pos.y + 0.5, W/n - 1, H/n  - 1))
-            else:
-                pg.draw.rect(screen, (0, 255, 0), (grid[i][j].pos.x + 0.5, grid[i][j].pos.y + 0.5, W/n - 1, H/n  - 1))
+#     for i in range(5):
+#         for j in range(5):
+#             if (i, j) not in Astar and not grid[i][j].obstacle:
+#                 pg.draw.rect(screen, (255, 255, 255), (grid[i][j].pos.x, grid[i][j].pos.y, W/n, H/n), 1)
+#             elif grid[i][j].obstacle:
+#                 pg.draw.rect(screen, (255, 0, 0), (grid[i][j].pos.x + 0.5, grid[i][j].pos.y + 0.5, W/n - 1, H/n  - 1))
+#             else:
+#                 pg.draw.rect(screen, (0, 255, 0), (grid[i][j].pos.x + 0.5, grid[i][j].pos.y + 0.5, W/n - 1, H/n  - 1))
     
-    pg.display.update()
+#     pg.display.update()
 
-pg.quit()
+# pg.quit()
 

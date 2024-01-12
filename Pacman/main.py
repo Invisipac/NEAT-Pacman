@@ -49,7 +49,7 @@ class Game:
                         pg.draw.rect(self.screen, (50, 50, 200), (i*RATIO[0], j*RATIO[1], RATIO[0], RATIO[1]))
 
             self.pacman.show(self.screen)
-            self.ghost.move_ghost(dir=(-1, 0))
+            self.ghost.move_ghost(self.pacman)
             self.ghost.draw_ghost(self.screen)
             pg.display.update()
             clock.tick(30)
