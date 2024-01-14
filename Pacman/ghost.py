@@ -26,19 +26,23 @@ class Ghost:
         grid = map
 
         Astar_path = list(reversed(astar(start, goal, grid)))
-        print(len(Astar_path))
-        x_diff = -(start[1] - Astar_path[1][1])
-        y_diff = -(start[0] - Astar_path[1][0])
+        print(Astar_path)
+        if len(Astar_path) > 1:
+            x_diff = -(start[1] - Astar_path[1][1])
+            y_diff = -(start[0] - Astar_path[1][0])
 
 
-        if x_diff != 0:
-            self.dir[0] = (x_diff)/abs(x_diff)
+            if x_diff != 0:
+                self.dir[0] = (x_diff)/abs(x_diff)
+            else:
+                self.dir[0] = 0
+            if y_diff != 0:
+                self.dir[1] = (y_diff)/abs(y_diff)
+            else:
+                self.dir[1] = 0
+        
         else:
-            self.dir[0] = 0
-        if y_diff != 0:
-            self.dir[1] = (y_diff)/abs(y_diff)
-        else:
-            self.dir[1] = 0
+            self.dir = [0, 0]
     
     def move_ghost(self, pacman: Pacman):
         self.find_map_loc()
