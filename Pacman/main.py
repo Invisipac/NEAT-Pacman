@@ -2,13 +2,14 @@ from nodegroup import NodeGroup
 from pacman import Pacman
 from dots import Dot
 from variables import *
-
+from ghost import Ghost
 
 class Game:
     def __init__(self) -> None:
         self.pacman = Pacman((13.5, 23), 4)
         self.nodes = NodeGroup()
         self.nodes.setupTestNodes(map)
+        self.ghost = Ghost((5, 8.5), 4, (255, 0, 0))
         self.screen = pg.display.set_mode((WIDTH, HEIGHT))
         self.dots = []
         for j, y in enumerate(map):
@@ -48,7 +49,8 @@ class Game:
                         pg.draw.rect(self.screen, (50, 50, 200), (i*RATIO[0], j*RATIO[1], RATIO[0], RATIO[1]))
 
             self.pacman.show(self.screen)
-
+            self.ghost.move_ghost(self.pacman)
+            self.ghost.draw_ghost(self.screen)
             pg.display.update()
             clock.tick(30)
 
