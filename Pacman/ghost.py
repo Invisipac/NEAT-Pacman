@@ -26,7 +26,7 @@ class Ghost:
         grid = map
 
         Astar_path = list(reversed(astar(start, goal, grid)))
-
+        print(len(Astar_path))
         x_diff = -(start[1] - Astar_path[1][1])
         y_diff = -(start[0] - Astar_path[1][0])
 

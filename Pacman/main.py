@@ -9,7 +9,7 @@ class Game:
         self.pacman = Pacman((13.5, 23), 4)
         self.nodes = NodeGroup()
         self.nodes.setupTestNodes(map)
-        self.ghost = Ghost((5, 8.5), 8, (255, 0, 0))
+        self.ghost = Ghost((5, 8.5), 4, (255, 0, 0))
         self.screen = pg.display.set_mode((WIDTH, HEIGHT))
         self.dots = []
         for j, y in enumerate(map):
