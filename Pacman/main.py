@@ -3,7 +3,7 @@ from pacman import Pacman
 from dots import Dot
 from variables import *
 from ghost import Ghost
-
+from time import time_ns
 class Game:
     def __init__(self) -> None:
         self.pacman = Pacman((13.5, 23), 4)
@@ -50,8 +50,14 @@ class Game:
                         pg.draw.rect(self.screen, (50, 50, 200), (i*RATIO[0], j*RATIO[1], RATIO[0], RATIO[1]))
 
             self.pacman.show(self.screen)
+            s = time_ns()
             self.ghost.update(self.pacman.map_locs)
+            e = time_ns()
+            print(f"update, {e - s}")
+            s = time_ns()
             self.ghost.move_ghost()
+            e = time_ns()
+            print(f"move, {e - s}")
             self.ghost.draw_ghost(self.screen)
             pg.display.update()
             clock.tick(30)

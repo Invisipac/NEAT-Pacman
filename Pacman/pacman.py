@@ -99,8 +99,8 @@ class Pacman:
                     if self.map_locs.x == 29 and self.map_locs.y == 14:
                         self.pos.x = -RATIO[0]
 
-        print(self.pos, self.map_locs, can_turn)
-        print(f"dir: {self.dir}, wannabe: {self.wannabe_dir}")
+        #print(self.pos, self.map_locs, can_turn)
+        #print(f"dir: {self.dir}, wannabe: {self.wannabe_dir}")
 
     def eat(self, dot):
         if self.map_locs.x == dot.map_pos[0] and self.map_locs.y == dot.map_pos[1]:

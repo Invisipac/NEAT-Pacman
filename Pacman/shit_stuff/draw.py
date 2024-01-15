@@ -52,6 +52,6 @@ for j, y in enumerate(map):
                     map[j] = map[j][:i] + "*" + map[j][i+1:]
         except:
             pass
-for i in map:
-    print(i)
-print(map)
+# for i in map:
+#     #print(i)
+# #print(map)

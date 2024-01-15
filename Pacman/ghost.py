@@ -34,7 +34,7 @@ class Ghost:
         # Astar_path = list(reversed(astar(start, goal, grid)))
         # print(Astar_path)
         if len(self.cur_path) > 1:
-            print(self.cur_path)
+            #print(self.cur_path)
             x_diff = self.cur_path[1][1] - self.start[1] 
             y_diff = self.cur_path[1][0] - self.start[0]
 
@@ -66,7 +66,6 @@ class Ghost:
         pass
     
     def move_ghost(self):
-        self.find_map_loc()
 
         row = int(self.map_locs.y + self.dir[1])
         col = int(self.map_locs.x + self.dir[0])
