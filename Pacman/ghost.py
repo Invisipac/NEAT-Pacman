@@ -26,10 +26,10 @@ class Ghost:
             self.pos.y = self.map_locs.y * RATIO[1] + RATIO[1] / 2
     
     def update(self, target):
+        self.find_map_loc()
         self.start = (int(self.map_locs.y), int(self.map_locs.x))        
         target = (int(self.pacman.map_locs.y), int(self.pacman.map_locs.x))
         self.cur_path = list(reversed(astar(self.start, target, map)))
-        self.find_map_loc()
 
     def calculate_dir(self):
         # Astar_path = list(reversed(astar(start, goal, grid)))
