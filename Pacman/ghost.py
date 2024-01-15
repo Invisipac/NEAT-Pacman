@@ -14,7 +14,8 @@ class Ghost:
         self.start = (int(self.map_locs.y), int(self.map_locs.x))
         self.cur_path = list(reversed(astar(self.start, self.start, map)))
         self.pacman = pacman
-        self.state = "Chase"
+        self.state = "Scatter"
+        self.random_target = self.find_random_pos()
         # self.random_pos = (0, 0)
 
 
@@ -29,6 +30,11 @@ class Ghost:
     def update(self, target):
         if self.state == "Chase":
             target = (int(self.pacman.map_locs.y), int(self.pacman.map_locs.x))
+        elif self.state == "Scatter":
+            target = self.random_target
+            if len(self.cur_path) < 4:
+                target = self.find_random_pos()
+                self.random_target = target
         self.find_map_loc()
         self.start = (int(self.map_locs.y), int(self.map_locs.x))        
         self.cur_path = list(reversed(astar(self.start, target, map)))
