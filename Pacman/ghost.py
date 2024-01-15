@@ -4,7 +4,7 @@ from astar import astar
 from pacman import Pacman
 import random
 class Ghost:
-    def __init__(self, pos, speed, colour) -> None:
+    def __init__(self, pos, speed, colour, pacman: Pacman) -> None:
         self.pos = vec(pos[0]*RATIO[0], pos[1]*RATIO[1])
         self.map_locs = vec(*pos)
         self.speed = vec(speed, speed)
@@ -13,6 +13,7 @@ class Ghost:
         self.r = 10
         self.start = (int(self.map_locs.y), int(self.map_locs.x))
         self.cur_path = list(reversed(astar(self.start, self.start, map)))
+        self.pacman = pacman
         # self.random_pos = (0, 0)
 
 
@@ -25,10 +26,10 @@ class Ghost:
             self.pos.y = self.map_locs.y * RATIO[1] + RATIO[1] / 2
     
     def update(self, target):
-        target = (int(target[1]), int(target[0]))
+        self.start = (int(self.map_locs.y), int(self.map_locs.x))        
+        target = (int(self.pacman.map_locs.y), int(self.pacman.map_locs.x))
         self.cur_path = list(reversed(astar(self.start, target, map)))
         self.find_map_loc()
-        self.start = (int(self.map_locs.y), int(self.map_locs.x))        
 
     def calculate_dir(self):
         # Astar_path = list(reversed(astar(start, goal, grid)))
@@ -37,7 +38,6 @@ class Ghost:
             #print(self.cur_path)
             x_diff = self.cur_path[1][1] - self.start[1] 
             y_diff = self.cur_path[1][0] - self.start[0]
-
 
             if x_diff != 0:
                 self.dir[0] = (x_diff)/abs(x_diff)
