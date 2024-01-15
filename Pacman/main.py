@@ -10,7 +10,7 @@ class Game:
         self.nodes = NodeGroup()
         self.nodes.setupTestNodes(map)
         self.ghost = Ghost((5, 8.5), 4, (255, 0, 0))
-        self.ghost.scare_ghost(self.pacman)
+        # self.ghost.scare_ghost(self.pacman)
         self.screen = pg.display.set_mode((WIDTH, HEIGHT))
         self.dots = []
         for j, y in enumerate(map):
@@ -50,7 +50,8 @@ class Game:
                         pg.draw.rect(self.screen, (50, 50, 200), (i*RATIO[0], j*RATIO[1], RATIO[0], RATIO[1]))
 
             self.pacman.show(self.screen)
-            self.ghost.move_ghost(self.ghost.random_pos)
+            self.ghost.update(self.pacman.map_locs)
+            self.ghost.move_ghost()
             self.ghost.draw_ghost(self.screen)
             pg.display.update()
             clock.tick(30)
