@@ -14,6 +14,7 @@ class Ghost:
         self.start = (int(self.map_locs.y), int(self.map_locs.x))
         self.cur_path = list(reversed(astar(self.start, self.start, map)))
         self.pacman = pacman
+        self.state = "Chase"
         # self.random_pos = (0, 0)
 
 
@@ -26,9 +27,10 @@ class Ghost:
             self.pos.y = self.map_locs.y * RATIO[1] + RATIO[1] / 2
     
     def update(self, target):
+        if self.state == "Chase":
+            target = (int(self.pacman.map_locs.y), int(self.pacman.map_locs.x))
         self.find_map_loc()
         self.start = (int(self.map_locs.y), int(self.map_locs.x))        
-        target = (int(self.pacman.map_locs.y), int(self.pacman.map_locs.x))
         self.cur_path = list(reversed(astar(self.start, target, map)))
 
     def calculate_dir(self):
@@ -52,12 +54,12 @@ class Ghost:
             self.dir = [0, 0]
     
     
-    def find_random_pos(self, pacman: Pacman):
+    def find_random_pos(self):
         not_obs = []
         for i, l in enumerate(map):
             for j, c in enumerate(l):
                 if c in NODES or c in POWER_DOTS:
-                    not_obs.append((j, i))
+                    not_obs.append((i, j))
         
         return random.choice(not_obs)
         
