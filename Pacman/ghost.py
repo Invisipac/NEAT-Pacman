@@ -19,6 +19,7 @@ class Ghost:
         self.target = (0, 0)
         self.start_scared = True
         self.timer = 0
+        self.can_move = True
         # self.random_target = self.find_random_pos()
         # self.need_new_scared_path = True
         # self.scared_positions = []
@@ -31,9 +32,11 @@ class Ghost:
         if (self.pos.x - RATIO[0] / 2) % RATIO[0] <= 1:
             self.map_locs.x = self.pos.x // RATIO[0]
             self.pos.x = self.map_locs.x* RATIO[0] + RATIO[0] / 2 
+            self.can_move = True
         if (self.pos.y - RATIO[1] / 2) % RATIO[1] <= 1:
             self.map_locs.y = self.pos.y // RATIO[1]
             self.pos.y = self.map_locs.y * RATIO[1] + RATIO[1] / 2
+            self.can_move = True
     
     def update(self):
         self.timer += 0.1
@@ -63,22 +66,21 @@ class Ghost:
     
     def dist_to_pacman(self):
         return math.sqrt((self.pos.x - self.pacman.pos.x)**2 + (self.pos.y - self.pacman.pos.y)**2)
-    
-    # def find_scared_pos(self):
-    #     if self.need_new_scared_path:
-    #         self.scared_positions = []
-    #         for i, l in enumerate(map):
-    #             for j, c in enumerate(l):
-    #                 if ((c in NODES or c in POWER_DOTS)
-    #                     and (i < self.pacman.map_locs.y - self.scare_radius or i > self.pacman.map_locs.y + self.scare_radius)
-    #                     and (j < self.pacman.map_locs.x - self.scare_radius or j > self.pacman.map_locs.x + self.scare_radius)):
-    #                     self.scared_positions.append((i, j))
-    #         print(self.scared_positions)
-    #         self.target = random.choice(self.scared_positions)
-    #         self.need_new_scared_path = False
-    #     elif len(self.cur_path) == 1:#self.dist_to_pacman() <= self.scare_radius * 24:
-    #         self.need_new_scared_path = True
-       
+
+    def move_towards(self, node):
+        x_diff = node[0] - self.map_locs.x 
+        y_diff = node[1] - self.map_locs.y
+
+        if x_diff != 0:
+            self.dir[0] = (x_diff)//abs(x_diff)
+        else:
+            self.dir[0] = 0
+        if y_diff != 0:
+            self.dir[1] = (y_diff)//abs(y_diff)
+        else:
+            self.dir[1] = 0
+        
+
     def move_scared(self):
         l, r = 0, 0
         if self.start_scared:
@@ -100,40 +102,28 @@ class Ghost:
                     self.dir[1] = 0
                     self.dir[0] = -int(x_diff/abs(x_diff))
             print(self.pacman.dir, x_diff, y_diff, self.dir)
-            # if y_diff != 0:
-            #     self.dir[1] = y_diff//y_diff
-            # else:
-            #     self.dir[1] = 0
-
-            # if self.pacman.dir == "UP":
-            #     self.dir = [0, -1]
-            # if self.pacman.dir == "DOWN":
-            #     self.dir = [0, 1]
-            # if self.pacman.dir == "LEFT":
-            #     self.dir = [-1, 0]
-            # if self.pacman.dir == "RIGHT":
-            #     self.dir = [1, 0]
             self.start_scared = False
 
         
         row = int(self.map_locs.y) 
         col = int(self.map_locs.x)
-        self.find_map_loc()
+        # self.find_map_loc()
         #some bug that dir is not an int but a float but the value is right???
         #temp fix
-        if map[row + self.dir[1]][col + self.dir[0]] in OBSTACLES:
-            self.dir[0], self.dir[1] = self.dir[1], self.dir[0]
-            if map[row + self.dir[1]][col + self.dir[0]] in OBSTACLES:
-                r = 1
-                self.dir[0] *= -1
-                self.dir[1] *= -1
-            elif map[row - self.dir[1]][col - self.dir[0]] in OBSTACLES:
-                l = 1
-            
-            if l + r == 0:
-                c = random.choice([-1, 1])
-                self.dir[0] *= c
-                self.dir[1] *= c
+
+        if self.can_move:
+            possible_nodes = []
+            possible_nodes.append((col + self.dir[0], row + self.dir[1]))
+            possible_nodes.append((col + self.dir[1], row + self.dir[0]))
+            possible_nodes.append((col - self.dir[1], row - self.dir[0]))
+            for n in possible_nodes:
+                if map[int(n[1])][int(n[0])] in OBSTACLES:
+                    possible_nodes.remove(n)
+            self.target = random.choice(possible_nodes)
+            print(self.target, self.map_locs, possible_nodes)
+            self.move_towards(self.target)
+            self.can_move = False
+
             
     def calculate_dir(self):
         # Astar_path = list(reversed(astar(start, goal, grid)))
@@ -156,28 +146,16 @@ class Ghost:
             self.dir = [0, 0]
     
     
-    def find_random_pos(self):
-        not_obs = []
-        for i, l in enumerate(map):
-            for j, c in enumerate(l):
-                if c in NODES or c in POWER_DOTS:
-                    not_obs.append((i, j))
-        
-        return random.choice(not_obs)
-        
-        # self.move_ghost(random_pos)
-    def move_scared_ghost(self):
-        pass
+    
     
     def move_ghost(self):
 
         row = int(self.map_locs.y + self.dir[1])
         col = int(self.map_locs.x + self.dir[0])
-        
-        
-
         if map[row][col] in PATH and self.pos.x >= 0 and self.pos.x <= WIDTH:
             self.pos += vec(self.dir[0]*RATIO[0]/self.speed[0], self.dir[1]*RATIO[1]/self.speed[1])
+        self.find_map_loc()
+
 
     def draw_ghost(self, screen: pg.Surface):
         pg.draw.circle(screen, self.colour, self.pos, 10)
