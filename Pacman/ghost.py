@@ -22,6 +22,9 @@ class Ghost:
         self.can_move = True
         self.once = True
 
+    def draw_path(self, screen: pg.Surface):
+        for i in range(1, len(self.cur_path)):
+            pg.draw.line(screen, self.colour, (self.cur_path[i][1]*RATIO[0], self.cur_path[i][0]*RATIO[0]), (self.cur_path[i - 1][1]*RATIO[0], self.cur_path[i - 1][0]*RATIO[0]), 5)
 
     def find_map_loc(self):
         if (self.pos.x - RATIO[0] / 2) % RATIO[0] <= 1:
@@ -138,5 +141,6 @@ class Ghost:
         self.find_map_loc()
 
     def draw_ghost(self, screen: pg.Surface):
+        self.draw_path(screen)
         pg.draw.circle(screen, self.colour, self.pos, 10)
     
