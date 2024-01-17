@@ -9,11 +9,11 @@ class Ghost:
         self.pos = vec(pos[0]*RATIO[0], pos[1]*RATIO[1])
         self.map_locs = vec(int(pos[0]), int(pos[1]))
         self.speed = vec(speed, speed)
-        self.dir = [1, 0]
+        self.dir = [-1, 0]
         self.colour = colour
         self.r = 10
         self.start = (int(self.map_locs.y), int(self.map_locs.x))
-        self.cur_path = list(reversed(astar(self.start, self.start, map)))
+        self.cur_path = list(reversed(astar(self.start, self.start, map, self.dir)))
         self.pacman = pacman
         self.state = "Chase"
         self.target = (-10, -10)
@@ -37,16 +37,18 @@ class Ghost:
             self.target = (int(self.pacman.map_locs.y), int(self.pacman.map_locs.x))
             # self.find_map_loc()
             self.start = (int(self.map_locs.y), int(self.map_locs.x))        
-            self.cur_path = list(reversed(astar(self.start, self.target, map)))
+            self.cur_path = list(reversed(astar(self.start, self.target, map, self.dir)))
+            #self.cur_path = list(reversed(astar(self.start, (14, 27), map)))
+            #print(self.cur_path)
             self.calculate_dir()
-            if self.timer > 7:
-                self.state = "Scared"
-                self.start_scared = True
-                self.once = True
-                self.timer = 0
+            # if self.timer > 7:
+            #     self.state = "Scared"
+            #     self.start_scared = True
+            #     self.once = True
+            #     self.timer = 0
         elif self.state == "Scared":
             self.move_scared()
-            print(self.dir, self.target, self.map_locs)
+            #print(self.dir, self.target, self.map_locs)
             if self.timer > 10:
                 self.state = "Chase"
                 self.timer = 0
@@ -106,7 +108,7 @@ class Ghost:
             for n in not_possible_nodes:
                 possible_nodes.remove(n)
             self.target = random.choice(possible_nodes)
-            print(self.dir, self.target, self.map_locs, possible_nodes)
+            #print(self.dir, self.target, self.map_locs, possible_nodes)
             self.move_towards(self.target)
             self.once = False
             # self.can_move = False

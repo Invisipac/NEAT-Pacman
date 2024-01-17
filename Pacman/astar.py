@@ -31,23 +31,36 @@ def reconstruct(cameFrom: dict, current):
         totalPath.append(current)
     return totalPath
 
-def find_neighbours(grid, i, j):
+
+# tp_node_left = ((14, -1), (14, 27))
+# tp_node_right = ((14, 28), (14, 0))
+
+tp_nodes_going_left = {(14, 0):(14, -1), (14, -1):(14, 27)}
+tp_nodes_going_right = {(14, 27):(14, 28), (14, 28) : (14, 0)}
+
+def find_neighbours(grid, i, j, direction):
     neighbours = []
-    if i - 1 >=0 and not grid[i - 1][j] in OBSTACLES:
-        neighbours.append((i - 1, j))
-    if i + 1 <= GRID_SIZE[1] - 1 and not grid[i + 1][j] in OBSTACLES:
-        neighbours.append((i + 1, j))
-    if j - 1 >= 0 and not grid[i][j - 1] in OBSTACLES:
-        neighbours.append((i, j - 1))
-    if j + 1 <= GRID_SIZE[0] - 1 and not grid[i][j + 1] in OBSTACLES:
-        neighbours.append((i, j + 1))
-    
+
+    if direction == [-1, 0] and (i, j) in tp_nodes_going_left:
+        neighbours.append(tp_nodes_going_left[(i, j)])
+    elif direction == [1, 0] and (i, j) in tp_nodes_going_right:
+        neighbours.append(tp_nodes_going_right[(i, j)])
+    else:
+        if i - 1 >=0 and not grid[i - 1][j] in OBSTACLES:
+            neighbours.append((i - 1, j))
+        if i + 1 <= GRID_SIZE[1] - 1 and not grid[i + 1][j] in OBSTACLES:
+            neighbours.append((i + 1, j))
+        if j - 1 >= 0 and not grid[i][j - 1] in OBSTACLES:
+            neighbours.append((i, j - 1))
+        if j + 1 <= GRID_SIZE[0] - 1 and not grid[i][j + 1] in OBSTACLES:
+            neighbours.append((i, j + 1))
+        
     return neighbours
 
 def h(i, j, goal):
     return (goal[1] - j)**2 + (goal[0] - i)**2
 
-def astar(start, goal, grid, h = h):
+def astar(start, goal, grid, direction, h = h):
     #openSet = [start]
     openSet = MinHeap()
     openSet.push(start, 0)
@@ -69,7 +82,7 @@ def astar(start, goal, grid, h = h):
         openSet.remove(element)
         closedSet.append(current)
 
-        for n in find_neighbours(grid, current[0], current[1]):
+        for n in find_neighbours(grid, current[0], current[1], direction):
             tempG = gScore[current] + 1
             if n not in closedSet:
                 if openSet.is_element(n):
