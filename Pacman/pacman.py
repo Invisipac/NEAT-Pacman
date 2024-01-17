@@ -48,11 +48,11 @@ class Pacman:
     def snap_to_grid(self):
         can_turn = [False, False]
         if (self.pos.x - RATIO[0] / 2) % RATIO[0] <= 1:
-            self.map_locs.x = self.pos.x // RATIO[0]
+            self.map_locs.x = (self.pos.x // RATIO[0]) % len(map[0])
             self.pos.x = self.map_locs.x * RATIO[0] + RATIO[0] / 2
             can_turn[1] = True
         if (self.pos.y - RATIO[1] / 2) % RATIO[1] <= 1:
-            self.map_locs.y = self.pos.y // RATIO[1]
+            self.map_locs.y = (self.pos.y // RATIO[1]) % len(map)
             self.pos.y = self.map_locs.y * RATIO[1] + RATIO[1] / 2
             can_turn[0] = True
 
@@ -73,7 +73,7 @@ class Pacman:
                     int((self.map_locs.x + current_move[0]) % len(map[0]))] in PATH and turn:
             self.pos += pg.Vector2(current_move[0] * (RATIO[0] / self.speed), current_move[1] * (RATIO[1] / self.speed))
             self.dir = direction
-            self.teleport(direction)
+            #self.teleport(direction)
             return True
         return False
 

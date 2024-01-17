@@ -9,7 +9,7 @@ class Ghost:
         self.pos = vec(pos[0]*RATIO[0], pos[1]*RATIO[1])
         self.map_locs = vec(int(pos[0]), int(pos[1]))
         self.speed = vec(speed, speed)
-        self.dir = [-1, 0]
+        self.dir = [1, 0]
         self.colour = colour
         self.r = 10
         self.start = (int(self.map_locs.y), int(self.map_locs.x))
@@ -25,10 +25,10 @@ class Ghost:
 
     def find_map_loc(self):
         if (self.pos.x - RATIO[0] / 2) % RATIO[0] <= 1:
-            self.map_locs.x = self.pos.x // RATIO[0]
+            self.map_locs.x = (self.pos.x // RATIO[0]) % len(map[0])
             self.pos.x = self.map_locs.x* RATIO[0] + RATIO[0] / 2 
         if (self.pos.y - RATIO[1] / 2) % RATIO[1] <= 1:
-            self.map_locs.y = self.pos.y // RATIO[1]
+            self.map_locs.y = (self.pos.y // RATIO[1]) % len(map)
             self.pos.y = self.map_locs.y * RATIO[1] + RATIO[1] / 2
     
     def update(self):
@@ -39,14 +39,14 @@ class Ghost:
             self.start = (int(self.map_locs.y), int(self.map_locs.x))        
             self.cur_path = list(reversed(astar(self.start, self.target, map)))
             self.calculate_dir()
-            if self.timer > 10:
+            if self.timer > 7:
                 self.state = "Scared"
                 self.start_scared = True
                 self.once = True
                 self.timer = 0
         elif self.state == "Scared":
-            print(self.target, self.map_locs)
             self.move_scared()
+            print(self.dir, self.target, self.map_locs)
             if self.timer > 10:
                 self.state = "Chase"
                 self.timer = 0
@@ -73,8 +73,8 @@ class Ghost:
         if self.start_scared:
             
             self.dir = [0, 0]
-            x_diff = self.pacman.pos.x - self.pos.x
-            y_diff = self.pacman.pos.y - self.pos.y
+            x_diff = self.pacman.map_locs.x - self.map_locs.x
+            y_diff = self.pacman.map_locs.y - self.map_locs.y
             if x_diff == 0 and y_diff == 0:
                 return
             if self.pacman.dir == "RIGHT" or self.pacman.dir == "LEFT":
@@ -91,7 +91,7 @@ class Ghost:
                     self.dir[0] = -int(x_diff/abs(x_diff))
             self.start_scared = False
 
-        if self.once or self.target == self.map_locs:
+        if self.once or self.target == self.map_locs or (self.target[0] < 0) or self.target[0] > GRID_SIZE[0]:
             row = int(self.map_locs.y) 
             col = int(self.map_locs.x)
             
@@ -101,12 +101,12 @@ class Ghost:
             possible_nodes.append((int(col), int(row + 1)))
             possible_nodes.append((int(col), int(row - 1)))
             for n in possible_nodes:
-                if map[n[1]][n[0]] == 'w' or n == (int(col - self.dir[0]), int(row - self.dir[1])):
+                if map[n[1]%GRID_SIZE[1]][n[0]%GRID_SIZE[0]] == 'w' or n == (int(col - self.dir[0]), int(row - self.dir[1])):
                     not_possible_nodes.append(n)
             for n in not_possible_nodes:
                 possible_nodes.remove(n)
             self.target = random.choice(possible_nodes)
-            print(map[self.target[1]][self.target[0]], self.dir, self.target, self.map_locs, possible_nodes)
+            print(self.dir, self.target, self.map_locs, possible_nodes)
             self.move_towards(self.target)
             self.once = False
             # self.can_move = False
@@ -128,9 +128,10 @@ class Ghost:
             self.dir = [0, 0]
       
     def move_ghost(self):
-        row = int(self.map_locs.y + self.dir[1])
-        col = int(self.map_locs.x + self.dir[0])
-        if map[row][col] in PATH and self.pos.x >= 0 and self.pos.x <= WIDTH:
+        row = (int(self.map_locs.y + self.dir[1]))%len(map)
+        col = (int(self.map_locs.x + self.dir[0]))%(len(map[0]))
+        #print(self.pos)
+        if map[row][col] in PATH and self.map_locs.x >= -1 and self.map_locs.x <= WIDTH + 1:
             self.pos += vec(self.dir[0]*RATIO[0]/self.speed[0], self.dir[1]*RATIO[1]/self.speed[1])
         self.find_map_loc()
 
