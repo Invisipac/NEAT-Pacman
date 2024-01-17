@@ -58,7 +58,12 @@ def find_neighbours(grid, i, j, direction):
     return neighbours
 
 def h(i, j, goal):
-    return (goal[1] - j)**2 + (goal[0] - i)**2
+    heuristic = (goal[1] - j)**2 + (goal[0] - i)**2
+    # print(i, j)
+    if goal[0] == 14 and i == 14:
+        return 28**2 - heuristic
+    else:
+        return heuristic
 
 def astar(start, goal, grid, direction, h = h):
     #openSet = [start]

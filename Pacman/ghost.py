@@ -9,7 +9,7 @@ class Ghost:
         self.pos = vec(pos[0]*RATIO[0], pos[1]*RATIO[1])
         self.map_locs = vec(int(pos[0]), int(pos[1]))
         self.speed = vec(speed, speed)
-        self.dir = [-1, 0]
+        self.dir = [1, 0]
         self.colour = colour
         self.r = 10
         self.start = (int(self.map_locs.y), int(self.map_locs.x))
