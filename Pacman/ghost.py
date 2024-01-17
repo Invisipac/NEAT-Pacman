@@ -50,8 +50,7 @@ class Ghost:
             if self.timer > 10:
                 self.state = "Chase"
                 self.timer = 0
-        
-    
+         
     def dist_to_pacman(self):
         return math.sqrt((self.pos.x - self.pacman.pos.x)**2 + (self.pos.y - self.pacman.pos.y)**2)
 
@@ -90,17 +89,12 @@ class Ghost:
                 else:
                     self.dir[1] = 0
                     self.dir[0] = -int(x_diff/abs(x_diff))
-            # print(self.pacman.dir, x_diff, y_diff, self.dir)
             self.start_scared = False
 
         if self.once or self.target == self.map_locs:
             row = int(self.map_locs.y) 
             col = int(self.map_locs.x)
-            # self.find_map_loc()
-            #some bug that dir is not an int but a float but the value is right???
-            #temp fix
-            #print(map[23][15])
-            # if self.can_move:
+            
             possible_nodes, not_possible_nodes = [], []
             possible_nodes.append((int(col + 1), int(row)))
             possible_nodes.append((int(col - 1), int(row)))
@@ -116,13 +110,9 @@ class Ghost:
             self.move_towards(self.target)
             self.once = False
             # self.can_move = False
-
-            
+          
     def calculate_dir(self):
-        # Astar_path = list(reversed(astar(start, goal, grid)))
-        # print(Astar_path)
         if len(self.cur_path) > 1:
-            #print(self.cur_path)
             x_diff = self.cur_path[1][1] - self.start[1] 
             y_diff = self.cur_path[1][0] - self.start[0]
 
@@ -134,21 +124,15 @@ class Ghost:
                 self.dir[1] = (y_diff)//abs(y_diff)
             else:
                 self.dir[1] = 0
-        
         else:
             self.dir = [0, 0]
-    
-    
-    
-    
+      
     def move_ghost(self):
-
         row = int(self.map_locs.y + self.dir[1])
         col = int(self.map_locs.x + self.dir[0])
         if map[row][col] in PATH and self.pos.x >= 0 and self.pos.x <= WIDTH:
             self.pos += vec(self.dir[0]*RATIO[0]/self.speed[0], self.dir[1]*RATIO[1]/self.speed[1])
         self.find_map_loc()
-
 
     def draw_ghost(self, screen: pg.Surface):
         pg.draw.circle(screen, self.colour, self.pos, 10)
