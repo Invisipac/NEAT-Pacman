@@ -42,8 +42,10 @@ class Ghost:
             if self.timer > 10:
                 self.state = "Scared"
                 self.start_scared = True
+                self.once = True
                 self.timer = 0
         elif self.state == "Scared":
+            print(self.target, self.map_locs)
             self.move_scared()
             if self.timer > 10:
                 self.state = "Chase"
@@ -74,7 +76,8 @@ class Ghost:
             self.dir = [0, 0]
             x_diff = self.pacman.pos.x - self.pos.x
             y_diff = self.pacman.pos.y - self.pos.y
-
+            if x_diff == 0 and y_diff == 0:
+                return
             if self.pacman.dir == "RIGHT" or self.pacman.dir == "LEFT":
                 if x_diff != 0:
                     self.dir[0] = -int(x_diff/abs(x_diff))

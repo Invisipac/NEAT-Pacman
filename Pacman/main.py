@@ -55,7 +55,7 @@ class Game:
             # e = time_ns()
             # print(f"update, {e - s}")
             # s = time_ns()
-            print(self.ghost.dir)
+            #print(self.ghost.state)
             self.ghost.move_ghost()
             #self.ghost.find_scared_pos()
             # e = time_ns()
