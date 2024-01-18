@@ -9,13 +9,13 @@ class Ghost:
         self.pos = vec(pos[0]*RATIO[0], pos[1]*RATIO[1])
         self.map_locs = vec(int(pos[0]), int(pos[1]))
         self.speed = vec(speed, speed)
-        self.dir = [0, -1]
+        self.dir = [1, 0]
         self.colour = colour
         self.r = 10
         self.start = (int(self.map_locs.y), int(self.map_locs.x))
         self.pacman = pacman
         self.state = "Chase"
-        self.target = (int(self.map_locs.y - self.dir[1]), int(self.map_locs.x - self.dir[0]))#(-10, -10)
+        self.target = (int(self.pacman.map_locs.y), int(self.pacman.map_locs.x))#(int(self.map_locs.y - self.dir[1]), int(self.map_locs.x - self.dir[0]))#(-10, -10)
         self.cur_path = list(reversed(astar(self.start, self.target, map, self.dir)))
         self.start_scared = True
         self.timer = 0
@@ -39,8 +39,9 @@ class Ghost:
         if self.state == "Chase":
             self.target = (int(self.pacman.map_locs.y), int(self.pacman.map_locs.x))
             
-            self.start = (int(self.map_locs.y), int(self.map_locs.x))   
-            if len(self.cur_path) > 1 and self.start == self.cur_path[1]:     
+            self.start = (int(self.map_locs.y), int(self.map_locs.x)) 
+            
+            if len(self.cur_path) > 1 and self.start == (self.cur_path[1][0]%GRID_SIZE[1], self.cur_path[1][1]%GRID_SIZE[0]):     
                 self.cur_path = list(reversed(astar(self.start, self.target, map, self.dir)))    
                 self.calculate_dir()
             # if self.timer > 7:

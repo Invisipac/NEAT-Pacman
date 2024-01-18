@@ -47,11 +47,11 @@ def find_neighbours(grid, i, j, dir):
     elif dir == [1, 0] and (i, j) in tp_nodes_going_right:
         neighbours.append(tp_nodes_going_right[(i, j)])
     else:
-        if i + dir[1] in range(0, GRID_SIZE[1] + 1) and j + dir[0] in range(0, GRID_SIZE[0] + 1) and not grid[i + dir[1]][j + dir[0]] in OBSTACLES:
+        if i + dir[1] in range(0, GRID_SIZE[1]) and j + dir[0] in range(0, GRID_SIZE[0]) and not grid[i + dir[1]][j + dir[0]] in OBSTACLES:
             neighbours.append((i + dir[1], j + dir[0]))
-        if i + dir[0] in range(0, GRID_SIZE[1] + 1) and j + dir[1] in range(0, GRID_SIZE[0] + 1) and not grid[i + dir[0]][j + dir[1]] in OBSTACLES:
+        if i + dir[0] in range(0, GRID_SIZE[1]) and j + dir[1] in range(0, GRID_SIZE[0]) and not grid[i + dir[0]][j + dir[1]] in OBSTACLES:
             neighbours.append((i + dir[0], j + dir[1]))
-        if i - dir[0] in range(0, GRID_SIZE[1] + 1) and j - dir[1] in range(0, GRID_SIZE[0] + 1) and not grid[i - dir[0]][j - dir[1]] in OBSTACLES:
+        if i - dir[0] in range(0, GRID_SIZE[1]) and j - dir[1] in range(0, GRID_SIZE[0]) and not grid[i - dir[0]][j - dir[1]] in OBSTACLES:
             neighbours.append((i - dir[0], j - dir[1]))
         # if j + 1 <= GRID_SIZE[0] - 1 and not grid[i][j + 1] in OBSTACLES:
         #     neighbours.append((i, j + 1))
@@ -87,7 +87,7 @@ def astar(start, goal, grid, dir, h = h):
     
         openSet.remove(element)
         closedSet.append(current)
-        if cameFrom != {}:
+        if cameFrom != {} and current not in [(14, -1), (14, 28)] and cameFrom[current] not in [(14, -1), (14, 28)]:
             dir = list(vec(current[1] - cameFrom[current][1], current[0] - cameFrom[current][0]).normalize())
             dir = [int(dir[0]), int(dir[1])]
             # print(dir)
