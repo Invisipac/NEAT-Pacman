@@ -13,13 +13,15 @@ class Pacman:
     def show(self, display):
         pg.draw.circle(display, (200, 200, 50), (self.pos.x, self.pos.y), self.size)
         if self.wannabe_dir == "UP":
-            pg.draw.circle(display, (50, 50, 200), (self.pos.x, self.pos.y - 25), self.size // 2)
+            pg.draw.circle(display, (200, 200, 50), (self.pos.x, self.pos.y - 25), self.size // 2)
         elif self.wannabe_dir == "DOWN":
-            pg.draw.circle(display, (50, 50, 200), (self.pos.x, self.pos.y + 25), self.size // 2)
+            pg.draw.circle(display, (200, 200, 50), (self.pos.x, self.pos.y + 25), self.size // 2)
         elif self.wannabe_dir == "LEFT":
-            pg.draw.circle(display, (50, 50, 200), (self.pos.x - 25, self.pos.y), self.size // 2)
+            pg.draw.circle(display, (200, 200, 50), (self.pos.x - 25, self.pos.y), self.size // 2)
         elif self.wannabe_dir == "RIGHT":
-            pg.draw.circle(display, (50, 50, 200), (self.pos.x + 25, self.pos.y), self.size // 2)
+            pg.draw.circle(display, (200, 200, 50), (self.pos.x + 25, self.pos.y), self.size // 2)
+        # pg.draw.circle(display, (200, 200, 50), (self.pos.x, self.pos.y), RATIO[0] * 8.5, 3)
+
 
     def update(self, keys, timer):
         can_turn = self.snap_to_grid()
@@ -37,8 +39,8 @@ class Pacman:
             if not self.move(self.wannabe_dir, can_turn):
                 self.move(self.dir, can_turn)
 
-        #print(self.pos, self.map_locs, can_turn)
-        #print(f"dir: {self.dir}, wannabe: {self.wannabe_dir}")
+        # print(self.pos, self.map_locs, can_turn)
+        # print(f"dir: {self.dir}, wannabe: {self.wannabe_dir}")
 
     def eat(self, dot):
         if self.map_locs.x == dot.map_pos[0] and self.map_locs.y == dot.map_pos[1]:

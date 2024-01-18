@@ -26,10 +26,10 @@ class MinHeap:
     def remove(self, item):
         self.items.remove(item)
     
-# m = minHeap()
+m = MinHeap()
 
-# m.push(0, 1)
-# m.push(0, 5)
-# m.push(0, 3)
-# print(m.items)
-# print(m.pop())
+m.push(0, 1)
+m.push(0, 5)
+m.push(0, 3)
+print(m.items)
+print(m.pop())

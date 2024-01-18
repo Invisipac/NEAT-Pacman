@@ -10,4 +10,4 @@ class Dot:
 
     def show(self, display):
         if not self.eaten:
-            pg.draw.circle(display, (255, 0, 255), (self.pos.x, self.pos.y), self.size)
+            pg.draw.circle(display, (255, 255, 255), (self.pos.x, self.pos.y), self.size)
