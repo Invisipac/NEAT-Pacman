@@ -7,7 +7,7 @@ WIDTH, HEIGHT = RATIO[0] * GRID_SIZE[0], RATIO[1] * GRID_SIZE[1]
 map = open("./Pacman/true-map.txt", "r").read().split()
 
 NODES = ["n", "N", "&"]
-PATH = ["n", "&", "p", "P", "e"]
+PATH = ["n", "N", "&", "p", "P", "e"]
 DOTS = ["p", "n"]
-POWER_DOTS = ["P"]
+POWER_DOTS = ["P", "N"]
 OBSTACLES = ["w"]

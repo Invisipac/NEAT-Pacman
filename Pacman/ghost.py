@@ -3,31 +3,30 @@ import random
 
 from pygame.math import Vector2 as vec
 
-from astar import astar
 from pacman import Pacman
 from variables import *
 
 
 class Ghost:
     def __init__(self, pos, speed, colour, pacman: Pacman) -> None:
-        self.pos = vec(pos[0] * RATIO[0], pos[1] * RATIO[1])
+        self.pos = vec(pos[0] * RATIO[0] + RATIO[0] / 2, pos[1] * RATIO[1] + RATIO[1] / 2)
         self.map_locs = vec(*pos)
         self.speed = vec(speed, speed)
         self.dir = [1, 0]
         self.colour = colour
         self.r = 10
-        self.start = (int(self.map_locs.y), int(self.map_locs.x))
-        self.cur_path = list(reversed(astar(self.start, self.start, map, self.dir)))
-        self.cur_path = list(reversed(astar(self.start, self.start, map, self.dir)))
+        # self.start = (int(self.map_locs.y), int(self.map_locs.x))
+        # self.cur_path = list(reversed(astar(self.start, self.start, map, self.dir)))
         self.pacman = pacman
         self.state = "Chase"
         self.target = (-10, -10)
         self.start_scared = True
         self.timer = 0
         self.can_move = True
+        self.turn = (0, 0)
 
     def find_map_loc(self):
-        if (self.pos.x - RATIO[0] / 2) % RATIO[0] <= 1:
+        if (self.pos.x - RATIO[0] / 2) % RATIO[0] <= 5:
             self.map_locs.x = self.pos.x // RATIO[0]
             self.pos.x = self.map_locs.x * RATIO[0] + RATIO[0] / 2
             self.can_move = True
@@ -36,13 +35,18 @@ class Ghost:
             self.pos.y = self.map_locs.y * RATIO[1] + RATIO[1] / 2
             self.can_move = True
 
-    def chase_behaviour(self):
+        if self.map_locs.x == -1:
+            self.map_locs.x = 0
+        if self.map_locs.x == GRID_SIZE[0]:
+            self.map_locs.x = GRID_SIZE[0] - 1
+
+    def chase_behaviour(self, ghosts):
         pass
 
-    def update(self):
+    def update(self, ghosts):
         self.timer += 0.1
         if self.state == "Chase":
-            self.chase_behaviour()
+            self.chase_behaviour(ghosts)
             # if self.timer > 10:
             #     self.state = "Scared"
             #     self.timer = 0
@@ -54,7 +58,11 @@ class Ghost:
                 self.timer = 0
 
     def dist_to_pacman(self):
-        return math.sqrt((self.pos.x - self.pacman.pos.x) ** 2 + (self.pos.y - self.pacman.pos.y) ** 2)
+        return math.sqrt(
+            (self.map_locs.x - self.pacman.map_locs.x) ** 2 + (self.map_locs.y - self.pacman.map_locs.y) ** 2)
+
+    def dist_to_target(self, pos):
+        return math.sqrt((pos[0] - self.target[0]) ** 2 + (pos[1] - self.target[1]) ** 2)
 
     def move_towards(self, node):
         x_diff = node[0] - self.map_locs.x
@@ -114,44 +122,57 @@ class Ghost:
             self.move_towards(self.target)
             self.can_move = False
 
-    def calculate_dir(self):
-        if len(self.cur_path) > 1:
-            # print(self.cur_path)
-            x_diff = self.cur_path[1][1] - self.start[1]
-            y_diff = self.cur_path[1][0] - self.start[0]
-
-            if x_diff != 0:
-                self.dir[0] = (x_diff) // abs(x_diff)
-            else:
-                self.dir[0] = 0
-            if y_diff != 0:
-                self.dir[1] = (y_diff) // abs(y_diff)
-            else:
-                self.dir[1] = 0
-
-        else:
-            self.dir = [1, 0]
-
+    # def calculate_dir(self):
+    #     # Astar_path = list(reversed(astar(start, goal, grid)))
+    #     # print(Astar_path)
+    #     if len(self.cur_path) > 1:
+    #         # print(self.cur_path)
+    #         x_diff = self.cur_path[1][1] - self.start[1]
+    #         y_diff = self.cur_path[1][0] - self.start[0]
+    #
+    #         if x_diff != 0:
+    #             self.dir[0] = (x_diff) // abs(x_diff)
+    #         else:
+    #             self.dir[0] = 0
+    #         if y_diff != 0:
+    #             self.dir[1] = (y_diff) // abs(y_diff)
+    #         else:
+    #             self.dir[1] = 0
+    #
+    #     else:
+    #         self.dir = [1, 0]
+    def teleport(self):
+        if self.pos.x - self.r > WIDTH:
+            self.pos.x = -self.r
+        elif self.pos.x < -self.r:
+            self.pos.x = WIDTH + self.r
     def move_ghost(self):
+        row = int(self.map_locs.y)
+        col = int(self.map_locs.x)
+        neighbors = {}
+        if col not in [0, 27]:
+            if map[row + self.dir[1]][col + self.dir[0]] in PATH:
+                neighbors[(row + self.dir[1], col + self.dir[0])] = self.dist_to_target(
+                    (row + self.dir[1], col + self.dir[0]))
+            if map[row + self.dir[0]][col + self.dir[1]] in PATH:
+                neighbors[(row + self.dir[0], col + self.dir[1])] = self.dist_to_target(
+                    (row + self.dir[0], col + self.dir[1]))
+            if map[row - self.dir[0]][col - self.dir[1]] in PATH:
+                neighbors[(row - self.dir[0], col - self.dir[1])] = self.dist_to_target(
+                    (row - self.dir[0], col - self.dir[1]))
 
-        row = int(self.map_locs.y + self.dir[1])
-        col = int(self.map_locs.x + self.dir[0])
-        if map[row][col] in PATH and self.pos.x >= 0 and self.pos.x <= WIDTH:
+            min_coords = min(neighbors, key=neighbors.get)
+            if self.turn != self.map_locs:
+                self.dir = [min_coords[1] - col, min_coords[0] - row]
+                self.turn = self.map_locs.copy()
+
+        if map[row + self.dir[1]][(col + self.dir[0]) % len(map[0])] in PATH and 0 <= self.map_locs.x <= len(map[0]):
             self.pos += vec(self.dir[0] * RATIO[0] / self.speed[0], self.dir[1] * RATIO[1] / self.speed[1])
+            self.teleport()
         self.find_map_loc()
 
+
     def draw_ghost(self, screen: pg.Surface):
-        pg.draw.circle(screen, self.colour, self.pos, 10)
-        for i, point in enumerate(self.cur_path):
-            if point != self.cur_path[-1]:
-                if i != 0 and i != len(self.cur_path) - 2:
-                    pg.draw.line(screen, self.colour, (point[1] * RATIO[0] + RATIO[0] / 2, point[0] * RATIO[1] + RATIO[1] / 2), (self.cur_path[i+1][1] * RATIO[0] + RATIO[0] / 2, self.cur_path[i+1][0] * RATIO[1] + RATIO[1] / 2), 5)
-                elif i == 0:
-                    pg.draw.line(screen, self.colour,
-                                 self.pos, (
-                                 self.cur_path[i + 1][1] * RATIO[0] + RATIO[0] / 2,
-                                 self.cur_path[i + 1][0] * RATIO[1] + RATIO[1] / 2), 5)
-                else:
-                    # pass
-                    pg.draw.line(screen, self.colour,
-                                 (point[1] * RATIO[0] + RATIO[0] / 2, point[0] * RATIO[1] + RATIO[1] / 2), self.pacman.pos, 5)
+        pg.draw.circle(screen, self.colour, self.pos, self.r)
+        # pg.draw.circle(screen, self.colour, (self.target[1] * RATIO[1] + RATIO[1] / 2, self.target[0] * RATIO[0] + RATIO[0] / 2), 15)
+        # pg.draw.circle(screen, (0, 0, 0), (self.target[1] * RATIO[1] + RATIO[1] / 2, self.target[0] * RATIO[0] + RATIO[0] / 2), 5)
