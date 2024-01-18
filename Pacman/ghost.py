@@ -9,14 +9,14 @@ class Ghost:
         self.pos = vec(pos[0]*RATIO[0], pos[1]*RATIO[1])
         self.map_locs = vec(int(pos[0]), int(pos[1]))
         self.speed = vec(speed, speed)
-        self.dir = [1, 0]
+        self.dir = [0, -1]
         self.colour = colour
         self.r = 10
         self.start = (int(self.map_locs.y), int(self.map_locs.x))
-        self.cur_path = list(reversed(astar(self.start, self.start, map, self.dir)))
         self.pacman = pacman
         self.state = "Chase"
-        self.target = (-10, -10)
+        self.target = (int(self.map_locs.y - self.dir[1]), int(self.map_locs.x - self.dir[0]))#(-10, -10)
+        self.cur_path = list(reversed(astar(self.start, self.target, map, self.dir)))
         self.start_scared = True
         self.timer = 0
         self.can_move = True
@@ -38,12 +38,11 @@ class Ghost:
         self.timer += 0.1
         if self.state == "Chase":
             self.target = (int(self.pacman.map_locs.y), int(self.pacman.map_locs.x))
-            # self.find_map_loc()
-            self.start = (int(self.map_locs.y), int(self.map_locs.x))        
-            self.cur_path = list(reversed(astar(self.start, self.target, map, self.dir)))
-            #self.cur_path = list(reversed(astar(self.start, (14, 27), map)))
-            #print(self.cur_path)
-            self.calculate_dir()
+            
+            self.start = (int(self.map_locs.y), int(self.map_locs.x))   
+            if len(self.cur_path) > 1 and self.start == self.cur_path[1]:     
+                self.cur_path = list(reversed(astar(self.start, self.target, map, self.dir)))    
+                self.calculate_dir()
             # if self.timer > 7:
             #     self.state = "Scared"
             #     self.start_scared = True
@@ -120,15 +119,9 @@ class Ghost:
         if len(self.cur_path) > 1:
             x_diff = self.cur_path[1][1] - self.start[1] 
             y_diff = self.cur_path[1][0] - self.start[0]
-
-            if x_diff != 0:
-                self.dir[0] = (x_diff)//abs(x_diff)
-            else:
-                self.dir[0] = 0
-            if y_diff != 0:
-                self.dir[1] = (y_diff)//abs(y_diff)
-            else:
-                self.dir[1] = 0
+            self.dir = list(vec(x_diff, y_diff).normalize())
+            self.dir = [int(self.dir[0]), int(self.dir[1])]
+            
         else:
             self.dir = [0, 0]
       

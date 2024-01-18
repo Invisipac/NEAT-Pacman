@@ -1,5 +1,6 @@
 from node import Node
 import pygame as pg
+from pygame import Vector2 as vec
 from collections import deque
 from queue import PriorityQueue
 import math
@@ -38,22 +39,22 @@ def reconstruct(cameFrom: dict, current):
 tp_nodes_going_left = {(14, 0):(14, -1), (14, -1):(14, 27)}
 tp_nodes_going_right = {(14, 27):(14, 28), (14, 28) : (14, 0)}
 
-def find_neighbours(grid, i, j, direction):
+def find_neighbours(grid, i, j, dir):
     neighbours = []
 
-    if direction == [-1, 0] and (i, j) in tp_nodes_going_left:
+    if dir == [-1, 0] and (i, j) in tp_nodes_going_left:
         neighbours.append(tp_nodes_going_left[(i, j)])
-    elif direction == [1, 0] and (i, j) in tp_nodes_going_right:
+    elif dir == [1, 0] and (i, j) in tp_nodes_going_right:
         neighbours.append(tp_nodes_going_right[(i, j)])
     else:
-        if i - 1 >=0 and not grid[i - 1][j] in OBSTACLES:
-            neighbours.append((i - 1, j))
-        if i + 1 <= GRID_SIZE[1] - 1 and not grid[i + 1][j] in OBSTACLES:
-            neighbours.append((i + 1, j))
-        if j - 1 >= 0 and not grid[i][j - 1] in OBSTACLES:
-            neighbours.append((i, j - 1))
-        if j + 1 <= GRID_SIZE[0] - 1 and not grid[i][j + 1] in OBSTACLES:
-            neighbours.append((i, j + 1))
+        if i + dir[1] in range(0, GRID_SIZE[1] + 1) and j + dir[0] in range(0, GRID_SIZE[0] + 1) and not grid[i + dir[1]][j + dir[0]] in OBSTACLES:
+            neighbours.append((i + dir[1], j + dir[0]))
+        if i + dir[0] in range(0, GRID_SIZE[1] + 1) and j + dir[1] in range(0, GRID_SIZE[0] + 1) and not grid[i + dir[0]][j + dir[1]] in OBSTACLES:
+            neighbours.append((i + dir[0], j + dir[1]))
+        if i - dir[0] in range(0, GRID_SIZE[1] + 1) and j - dir[1] in range(0, GRID_SIZE[0] + 1) and not grid[i - dir[0]][j - dir[1]] in OBSTACLES:
+            neighbours.append((i - dir[0], j - dir[1]))
+        # if j + 1 <= GRID_SIZE[0] - 1 and not grid[i][j + 1] in OBSTACLES:
+        #     neighbours.append((i, j + 1))
         
     return neighbours
 
@@ -65,7 +66,7 @@ def h(i, j, goal):
     else:
         return heuristic
 
-def astar(start, goal, grid, direction, h = h):
+def astar(start, goal, grid, dir, h = h):
     #openSet = [start]
     openSet = MinHeap()
     openSet.push(start, 0)
@@ -86,8 +87,11 @@ def astar(start, goal, grid, direction, h = h):
     
         openSet.remove(element)
         closedSet.append(current)
-
-        for n in find_neighbours(grid, current[0], current[1], direction):
+        if cameFrom != {}:
+            dir = list(vec(current[1] - cameFrom[current][1], current[0] - cameFrom[current][0]).normalize())
+            dir = [int(dir[0]), int(dir[1])]
+            # print(dir)
+        for n in find_neighbours(grid, current[0], current[1], dir):
             tempG = gScore[current] + 1
             if n not in closedSet:
                 if openSet.is_element(n):

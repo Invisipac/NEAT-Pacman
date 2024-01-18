@@ -6,10 +6,10 @@ from ghost import Ghost
 from time import time_ns
 class Game:
     def __init__(self) -> None:
-        self.pacman = Pacman((13.5, 23), 4)
+        self.pacman = Pacman((13.5, 5), 4)
         self.nodes = NodeGroup()
         self.nodes.setupTestNodes(map)
-        self.ghost = Ghost((3, 14.5), 4, (255, 0, 0), self.pacman)
+        self.ghost = Ghost((6.5, 18.5), 6, (255, 0, 0), self.pacman)
         self.screen = pg.display.set_mode((WIDTH, HEIGHT))
         self.dots = []
         for j, y in enumerate(map):
