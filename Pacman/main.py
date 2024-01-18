@@ -2,14 +2,17 @@ from nodegroup import NodeGroup
 from pacman import Pacman
 from dots import Dot
 from variables import *
-from ghost import Ghost
+from ghosts import RedGhost, PinkGhost
 from time import time_ns
 class Game:
     def __init__(self) -> None:
         self.pacman = Pacman((13.5, 23), 4)
         self.nodes = NodeGroup()
         self.nodes.setupTestNodes(map)
-        self.ghost = Ghost((5, 8.5), 4, (255, 0, 0), self.pacman)
+        self.redGhost = RedGhost((5, 8.5), 4, (255, 0, 0), self.pacman)
+        self.pinkGhost = PinkGhost((10, 8.5), 4, (255, 0, 255), self.pacman)
+        self.ghosts = [self.redGhost, self.pinkGhost]
+        # self.ghost.scare_ghost(self.pacman)
         self.screen = pg.display.set_mode((WIDTH, HEIGHT))
         self.dots = []
         for j, y in enumerate(map):
@@ -44,10 +47,21 @@ class Game:
                     if x in OBSTACLES:
                         pg.draw.rect(self.screen, (50, 50, 200), (i*RATIO[0], j*RATIO[1], RATIO[0], RATIO[1]))
 
+
+            for ghost in self.ghosts:
+                # s = time_ns()
+                ghost.update()
+                # e = time_ns()
+                # print(f"update, {e - s}")
+                # s = time_ns()
+                # print(ghost.dir)
+                ghost.move_ghost()
+                #self.ghost.find_scared_pos()
+                # e = time_ns()
+                # print(f"move, {e - s}")
+                ghost.draw_ghost(self.screen)
+
             self.pacman.show(self.screen)
-            self.ghost.update()
-            self.ghost.move_ghost()
-            self.ghost.draw_ghost(self.screen)
             pg.display.update()
             clock.tick(30)
 
