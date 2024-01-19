@@ -6,18 +6,19 @@ from dots import Dot
 from variables import *
 from ghosts import RedGhost, PinkGhost, BlueGhost, OrangeGhost
 from time import time_ns
+
 class Game:
-    def __init__(self) -> None:
-        self.pacman = Pacman((13.5, 23), 4)
+    def __init__(self, screen) -> None:
+        self.pacman = Pacman((13.5, 23), 4, pacman_sprites)
         # self.nodes = NodeGroup()
         # self.nodes.setupTestNodes(map)
-        self.redGhost = RedGhost((5, 8), 4, pygame.Color("#9B1D20"), self.pacman)
-        self.pinkGhost = PinkGhost((10, 8), 4, pygame.Color("#DB06D4"), self.pacman)
-        self.blueGhost = BlueGhost((6, 12), 4, pygame.Color("#0074E0"), self.pacman)
-        self.orangeGhost = OrangeGhost((6, 14), 4, pygame.Color("#EC7E00"), self.pacman)
+        self.redGhost = RedGhost((5, 8), 4, ghost_sprites[0], self.pacman)
+        self.pinkGhost = PinkGhost((10, 8), 4, ghost_sprites[1], self.pacman)
+        self.blueGhost = BlueGhost((6, 12), 4, ghost_sprites[2], self.pacman)
+        self.orangeGhost = OrangeGhost((6, 14), 4, ghost_sprites[3], self.pacman)
         self.ghosts = [self.redGhost, self.pinkGhost, self.blueGhost, self.orangeGhost]
         # self.ghost.scare_ghost(self.pacman)
-        self.screen = pg.display.set_mode((WIDTH, HEIGHT))
+        self.screen = screen
         self.dots = []
         for j, y in enumerate(map):
             for i, x in enumerate(y):
@@ -32,29 +33,34 @@ class Game:
         run = True
         while run:
             timer += clock.get_time()
-            if timer > 1:
-                timer = 0
+            # if timer > 1:
+            #     timer = 0
             for event in pg.event.get():
                 if event.type == pg.QUIT:
                     run = False
-            self.pacman.update(pg.key.get_pressed(), timer)
-            self.screen.fill((0, 0, 0))
+            self.pacman.update(pg.key.get_pressed())
+            self.screen.blit(bg, (0, 0))
+            # self.screen.fill((0, 0, 0))
 
             for i in range(len(self.dots)-1, -1, -1):
                 dot = self.dots[i]
                 dot.show(self.screen)
                 if self.pacman.eat(dot):
+                    if dot.power_dot:
+                        for ghost in self.ghosts:
+                            ghost.change_mode("Frightened")
                     self.dots.remove(dot)
 
             for j, y in enumerate(map):
                 for i, x in enumerate(y):
                     if x in OBSTACLES:
-                        pg.draw.rect(self.screen, (50, 50, 200), (i*RATIO[0], j*RATIO[1], RATIO[0], RATIO[1]))
+                        pass
+                        # pg.draw.rect(self.screen, (50, 50, 200), (i*RATIO[0], j*RATIO[1], RATIO[0], RATIO[1]))
 
             self.pacman.show(self.screen)
             for ghost in self.ghosts:
                 # s = time_ns()
-                ghost.update(self.ghosts)
+                ghost.update(self.ghosts, clock.get_time())
                 # e = time_ns()
                 # print(f"update, {e - s}")
                 # s = time_ns()
@@ -65,12 +71,12 @@ class Game:
                 # print(f"move, {e - s}")
                 ghost.draw_ghost(self.screen)
 
-
+            # print(clock.get_fps())
             pg.display.update()
-            clock.tick(30)
+            clock.tick(5)
 
 
-game = Game()
+game = Game(display)
 
 game.main()
     

@@ -9,6 +9,9 @@ class RedGhost(Ghost):
     def chase_behaviour(self, ghosts):
         self.target = (int(self.pacman.map_locs.y), int(self.pacman.map_locs.x))
 
+    def scattered_behaviour(self):
+        self.target = (-3, 25)
+
 
 class PinkGhost(Ghost):
     def __init__(self, pos, speed, colour, pacman: Pacman) -> None:
@@ -19,6 +22,8 @@ class PinkGhost(Ghost):
         self.target = (int(self.pacman.map_locs.y) + 4 * moves[self.pacman.dir][0][1],
                        int(self.pacman.map_locs.x) + 4 * moves[self.pacman.dir][0][0])
 
+    def scattered_behaviour(self):
+        self.target = (-3, 2)
 
 class BlueGhost(Ghost):
     def __init__(self, pos, speed, colour, pacman: Pacman) -> None:
@@ -32,6 +37,9 @@ class BlueGhost(Ghost):
         self.target = (2 * target[0] - red_ghost_loc.y,
                        2 * target[1] - red_ghost_loc.x)
 
+    def scattered_behaviour(self):
+        self.target = (31, 27)
+
 
 class OrangeGhost(Ghost):
     def __init__(self, pos, speed, colour, pacman: Pacman) -> None:
@@ -42,3 +50,6 @@ class OrangeGhost(Ghost):
             self.target = (30, 0)
         else:
             self.target = (int(self.pacman.map_locs.y), int(self.pacman.map_locs.x))
+
+    def scattered_behaviour(self):
+        self.target = (31, 0)
