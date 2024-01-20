@@ -6,6 +6,7 @@ class Pacman(Object):
     def __init__(self, map_pos, size, speed, animation, frame_lim):
         super().__init__(map_pos, size, speed, animation, frame_lim)
         self.wannabe_dir = (0, -1)
+        self.points = 0
 
     def eat(self, dot):
         return self.map_pos == dot.map_pos

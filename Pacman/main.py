@@ -9,10 +9,10 @@ from variables import *
 class Game:
     def __init__(self, screen) -> None:
         self.pacman = Pacman((13.5, 23), 39, 4, pacman_sprites, 3)
-        self.redGhost = RedGhost((5, 8), 42, 4, ghost_sprites[0], 2)
-        self.pinkGhost = PinkGhost((10, 8), 42, 4, ghost_sprites[1], 2)
-        self.blueGhost = BlueGhost((6, 12), 42, 4, ghost_sprites[2], 2)
-        self.orangeGhost = OrangeGhost((6, 14), 42, 4, ghost_sprites[3], 2)
+        self.redGhost = RedGhost((13.5, 11), 42, 4, ghost_sprites[0], 2)
+        self.pinkGhost = PinkGhost((11.5, 13), 42, 6, ghost_sprites[1], 2)
+        self.blueGhost = BlueGhost((13.5, 13), 42, 8, ghost_sprites[2], 2)
+        self.orangeGhost = OrangeGhost((15.5, 13), 42, 6, ghost_sprites[3], 2)
         self.ghosts = [self.redGhost, self.pinkGhost, self.blueGhost, self.orangeGhost]
 
         self.screen = screen
@@ -30,7 +30,7 @@ class Game:
         clock = pg.time.Clock()
         run = True
         while run:
-            print("NEW FRAME __________________________")
+            # print("NEW FRAME __________________________")
             timer += clock.get_time()
             # if timer > 1:
             #     timer = 0
@@ -45,6 +45,7 @@ class Game:
                 dot = self.dots[i]
                 dot.show(self.screen)
                 if self.pacman.eat(dot):
+                    self.pacman.points += 1
                     if dot.power_dot:
                         for ghost in self.ghosts:
                             ghost.change_mode("Frightened")
@@ -61,7 +62,7 @@ class Game:
             for ghost in self.ghosts:
                 ghost.update(self.ghosts, clock.get_time(), self.pacman)
                 ghost.show(self.screen)
-
+            
             # print(clock.get_fps())
             pg.display.update()
             clock.tick(30)

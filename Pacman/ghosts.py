@@ -15,7 +15,9 @@ class RedGhost(Ghost):
 class PinkGhost(Ghost):
     def __init__(self, map_pos, size, speed, animation, frame_lim):
         super().__init__(map_pos, size, speed, animation, frame_lim)
-
+        self.trapped = True
+        self.dir = (0, 1)
+        self.point_limit = 25
     def chase_behaviour(self, ghosts, pacman):
         self.target = (int(pacman.map_pos.x) + 4 * pacman.dir[0],
                        int(pacman.map_pos.y) + 4 * pacman.dir[1])
@@ -27,7 +29,9 @@ class PinkGhost(Ghost):
 class BlueGhost(Ghost):
     def __init__(self, map_pos, size, speed, animation, frame_lim):
         super().__init__(map_pos, size, speed, animation, frame_lim)
-
+        self.trapped = True
+        self.dir = (0, -1)
+        self.point_limit = 50
     def chase_behaviour(self, ghosts, pacman):
         red_ghost_loc = ghosts[0].map_pos
         target = (int(pacman.map_pos.x) + 2 * pacman.dir[0],
@@ -42,7 +46,9 @@ class BlueGhost(Ghost):
 class OrangeGhost(Ghost):
     def __init__(self, map_pos, size, speed, animation, frame_lim):
         super().__init__(map_pos, size, speed, animation, frame_lim)
-
+        self.trapped = True
+        self.dir = (0, 1)
+        self.point_limit = 75
     def chase_behaviour(self, ghosts, pacman):
         if self.dist_to_pacman(pacman) < 8:
             self.target = (0, 30)
