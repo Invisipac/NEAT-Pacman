@@ -23,5 +23,5 @@ class Dot:
                     pg.draw.rect(display, (255, 183, 174),
                                  (self.pos.x - self.size / 2, self.pos.y - self.size / 4, self.size, self.size / 2))
                     pg.draw.rect(display, (255, 183, 174), (
-                    self.pos.x - 3 * self.size / 8, self.pos.y - 3 * self.size / 8, 3 * self.size / 4, 3 * self.size / 4))
-
+                        self.pos.x - 3 * self.size / 8, self.pos.y - 3 * self.size / 8, 3 * self.size / 4,
+                        3 * self.size / 4))

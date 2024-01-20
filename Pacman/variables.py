@@ -18,11 +18,10 @@ POWER_DOTS = ["P", "N"]
 OBSTACLES = ["w"]
 
 
-def convert_map_to_pixel(map_pos):
-    return pygame.Vector2(map_pos.x * RATIO[0] + RATIO[0] / 2, map_pos.y * RATIO[1] + RATIO[1] / 2)
-
 def get_map_letter(x, y):
     return map[int(y)][int(x)]
+
+
 def loadify(filename):
     return pygame.image.load(filename).convert_alpha()
 
