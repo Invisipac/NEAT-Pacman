@@ -71,8 +71,7 @@ class Game:
                     if not slow_pacman:
                         if self.pacman.not_move > 0:
                             self.pacman.not_move -= 1
-
-        if len(self.dots) == 0:
+            if len(self.dots) == 0:
                 self.pacman.not_move = 0
 
     def pacman_eating_ghosts(self):
@@ -136,6 +135,9 @@ class Game:
             #     print(i.state, end=", ")
             # print()
 
+            
+            # self.pacman_eating_ghosts()
+            
             for event in pg.event.get():
                 if event.type == pg.QUIT:
                     run = False
@@ -170,9 +172,6 @@ class Game:
             #                     self.pacman.not_move -= 1
             # if len(self.dots) == 0:
             #     self.pacman.not_move = 0
-            self.pacman_eating_dots()
-            self.pacman_eating_ghosts()
-            self.releasing_ghosts()
             # print(self.pacman.not_move)
             # for j, y in enumerate(map):
             #     for i, x in enumerate(y):
@@ -195,7 +194,9 @@ class Game:
             #             if ghost.state in ["Chase", "Scattered"]:
             #                 self.pacman.frame = 0
             #                 self.pacman.dead = True
-
+            self.pacman_eating_dots()
+            self.pacman_eating_ghosts()
+            self.releasing_ghosts()
             # if self.pacman.frame == 13:
             #     self.pacman.dead = False
             #     self.pacman.frame = 0
