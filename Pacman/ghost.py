@@ -12,7 +12,10 @@ class Ghost(Object):
         self.target = (-10, -10)
         self.possible_path = PATH.copy()
         self.timer = 0
-        self.point_limit = 5
+        self.frightened_timer = 0
+        self.old_mode = "Scattered"
+        self.mode_counter = 0
+        self.point_limit = 0
         # this allows the ghost to turn only once ber grid square
         self.allow_turning = (0, 0)
         self.mode_changed = False
@@ -35,7 +38,7 @@ class Ghost(Object):
             self.pos.x = 336
             self.target = (13.5, 13)
         if self.map_pos == (13.5, 13):
-            self.change_mode("Chase")
+            self.change_mode(self.old_mode)
             self.trapped = False
             self.target = (13.5, 11)
 
@@ -73,6 +76,7 @@ class Ghost(Object):
             # print('A', self.map_pos, neighbors)
 
             if not self.outside_box and not self.trapped:
+                self.speed = 24
                 if self.map_pos.x < 13.5:
                     min_coords = (self.map_pos.x + 1, self.map_pos.y)
                 elif self.map_pos.x > 13.5:
@@ -134,38 +138,50 @@ class Ghost(Object):
         self.dir = (self.dir[0] * -1, self.dir[1] * -1)
         self.state = new_mode
         self.mode_changed = True
-        self.timer = 0
+        self.frightened_timer = 0
         self.count_flash = 0
         self.turn_off = False
         # print("E MY BAD")
 
-    def state_manager(self, ghosts, time, pacman):
+    def state_manager(self, ghosts, time, pacman, ghost_timer):
         if self.state == "Chase":
             self.speed = 8
+            self.timer += time
+
             if self.outside_box:
                 self.chase_behaviour(ghosts, pacman)
-            self.timer += time
-            if self.timer > 1500:
-                pass
-                # self.change_mode("Frightened")
+
+            if self.mode_counter < len(times):
+                if self.timer > times[self.mode_counter]:
+                    self.change_mode("Scattered")
+                    self.old_mode = "Scattered"
+                    self.mode_counter += 1
+                    self.timer = 0
 
         elif self.state == "Frightened":
             self.speed = 12
-            self.timer += time
+            self.frightened_timer += time
 
-            if self.timer > 4000:
-                if (self.timer - 4000) > 250:
+            if self.frightened_timer > 4000:
+                if (self.frightened_timer - 4000) > 250:
                     self.count_flash += 1
                     self.turn_off = not self.turn_off
-                    self.timer = 4000
+                    self.frightened_timer = 4000
                 if self.count_flash == 9:
-                    # pass
-                    self.change_mode("Chase")
+                    self.change_mode(self.old_mode)
 
         elif self.state == "Scattered":
             self.speed = 8
+            self.timer += time
+
             if self.outside_box:
                 self.scattered_behaviour()
+
+            if self.timer > times[self.mode_counter]:
+                self.change_mode("Chase")
+                self.old_mode = "Chase"
+                self.mode_counter += 1
+                self.timer = 0
 
         elif self.state == "Dead":
             self.speed = 8
@@ -173,12 +189,8 @@ class Ghost(Object):
 
         if self.trapped:
             self.speed = 24
-            if pacman.points == self.point_limit:
-                self.trapped = False
-                self.mode_changed = True
-                self.target = (13.5, 11)
 
-    def update(self, ghosts, time, pacman):
+    def update(self, ghosts, time, pacman, ghost_timer):
         if not self.trapped:
             if not self.outside_box or self.state == "Dead":
                 if EXIT not in self.possible_path:
@@ -190,7 +202,7 @@ class Ghost(Object):
         if self.trapped:
             self.can_turn = [False, True]
 
-        self.state_manager(ghosts, time, pacman)
+        self.state_manager(ghosts, time, pacman, ghost_timer)
 
         if self.map_pos.y == 14 and (self.map_pos.x <= 5 or self.map_pos.x >= 22):
             self.speed = 12

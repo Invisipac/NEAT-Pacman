@@ -4,7 +4,7 @@ from variables import *
 
 
 class Object:
-    def __init__(self, map_pos, size, speed, animation, frame_lim):
+    def __init__(self, map_pos, size, speed, animation, frame_lim, lives=3, points=0):
         self.map_pos = vec(*map_pos)
         self.pos = vec((self.map_pos.x + 0.5) * RATIO[0], (self.map_pos.y + 0.5) * RATIO[1])
 
@@ -22,6 +22,7 @@ class Object:
         self.can_turn = [False, False]
 
         self.moved = False
+        self.lives = lives
 
     @staticmethod
     def convert_map_to_pixel(map_pos, coordinate_type):
@@ -76,11 +77,17 @@ class Object:
         elif self.pos.x < -self.size / 2:
             self.pos.x = WIDTH + self.size / 2
 
-    def update_animation(self):
+    def update_animation(self, dead=False):
         self.frame_counter += 1
-        if self.frame_counter > self.frame_speed and ((self.moved or self.frame != 0) or self.frame_lim == 2):
-            self.frame = (self.frame + 1) % self.frame_lim
-            self.frame_counter = 0
+        if not dead:
+            if self.frame_counter > self.frame_speed and ((self.moved or self.frame != 0) or self.frame_lim == 2):
+                self.frame = (self.frame + 1) % self.frame_lim
+                self.frame_counter = 0
+        else:
+            if self.frame_counter > self.frame_speed:
+                if self.frame < 13:
+                    self.frame += 1
+                self.frame_counter = 0
 
     def move(self, direction, trapped=False, possible_path=PATH):
         turn_translator = {(1, 0): 0, (-1, 0): 0, (0, 1): 1, (0, -1): 1}
@@ -118,8 +125,8 @@ class Object:
                     return True
         return False
 
-    def update_all(self, state="", outside_box=True):
-        self.update_animation()
+    def update_all(self, state="", outside_box=True, dead=False):
+        self.update_animation(dead)
         self.snap_to_grid(state, outside_box)
         self.get_dir()
         self.teleport()

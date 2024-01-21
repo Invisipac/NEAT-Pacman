@@ -18,6 +18,8 @@ DOTS = ["p", "n"]
 POWER_DOTS = ["P", "N"]
 OBSTACLES = ["w"]
 
+times = [7000, 20000, 7000, 20000, 5000, 20000, 5000]
+
 
 def get_map_letter(x, y):
     return map[int(y)][int(x)]
@@ -49,7 +51,13 @@ for i in range(4):
     dead_ghost_sprites[2].append(loadify(f"Sprites//Ghosts//Eyes//eyes{i}.png"))
 
 pacman_sprites = []
+pacman_sprites.append([])
 for i in range(9):
     if i % 2 == 0:
-        pacman_sprites.append([])
-    pacman_sprites[i // 2].append(loadify(f"Sprites//Pacman//pacman{i}.png"))
+        pacman_sprites[0].append([])
+    pacman_sprites[0][i // 2].append(loadify(f"Sprites//Pacman//pacman{i}.png"))
+pacman_sprites.append([])
+for i in range(14):
+    pacman_sprites[1].append(loadify(f"Sprites//Pacman//Dying-animation//pacman{i}.png"))
+
+print(pacman_sprites)
