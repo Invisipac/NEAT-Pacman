@@ -1,3 +1,5 @@
+import math
+
 from Object import Object
 from variables import *
 
@@ -8,8 +10,11 @@ class Pacman(Object):
         self.wannabe_dir = (0, -1)
         self.points = 0
 
-    def eat(self, dot):
-        return self.map_pos == dot.map_pos
+    def eat(self, oj, tp="dot"):
+        if tp == "dot":
+            return self.map_pos == oj.map_pos
+        else:
+            return math.sqrt((self.map_pos.x - oj.map_pos.x) ** 2 + (self.map_pos.y - oj.map_pos.y) ** 2) <= 1
 
     def update(self, keys):
         super().update_all()

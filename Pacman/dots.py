@@ -11,7 +11,7 @@ class Dot:
         self.frame = 0
 
     def show(self, display: pg.Surface):
-        self.frame += 0.2
+        self.frame += 0.075
         if not self.eaten:
             if not self.power_dot:
                 pg.draw.rect(display, (255, 183, 174),

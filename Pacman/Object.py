@@ -17,7 +17,7 @@ class Object:
         self.frame = 0
         self.frame_lim = frame_lim
         self.frame_counter = 0
-        self.frame_speed = 4
+        self.frame_speed = 7
 
         self.can_turn = [False, False]
 
@@ -28,7 +28,7 @@ class Object:
         return (map_pos.x * RATIO[0] + RATIO[0] / 2) if coordinate_type == "x" else (
                 map_pos.y * RATIO[1] + RATIO[1] / 2)
 
-    def snap_to_grid(self, trapped=False, outside_box=True):
+    def snap_to_grid(self, state="", outside_box=True):
         # if not trapped:
         self.can_turn = [False, False]
         if (self.pos.x - RATIO[0] / 2) % RATIO[0] <= 5:
@@ -40,8 +40,8 @@ class Object:
             # self.pos.x = self.convert_map_to_pixel(self.map_pos, "x")
             self.can_turn[1] = True
 
-        if not outside_box:
-            print(abs(self.pos.x - 336))
+        if not outside_box or state == "Dead":
+            # print(abs(self.pos.x - 336))
             if abs(self.pos.x - 336) < 3:
                 self.map_pos.x = 13.5
                 self.pos.x = 336
@@ -97,7 +97,7 @@ class Object:
         else:
             if trapped:
                 if get_map_letter((self.map_pos.x + direction[0]) % len(map[0]), self.map_pos.y + direction[1]) in possible_path:
-                    if ((14 * RATIO[1]) < self.pos.y < (15 * RATIO[1])):
+                    if (14 * RATIO[1]) < self.pos.y < (15 * RATIO[1]):
                         self.pos += pygame.Vector2(self.dir[0] * RATIO[0] / self.speed, self.dir[1] * RATIO[1] / self.speed)
                     else:
                         if self.pos.y > 348:
@@ -118,10 +118,9 @@ class Object:
                     return True
         return False
 
-    def update_all(self, trapped=False, outside_box=True):
+    def update_all(self, state="", outside_box=True):
         self.update_animation()
-        self.snap_to_grid(trapped, outside_box)
-        
+        self.snap_to_grid(state, outside_box)
         self.get_dir()
         self.teleport()
 

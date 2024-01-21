@@ -4,9 +4,11 @@ from ghost import Ghost
 class RedGhost(Ghost):
     def __init__(self, map_pos, size, speed, animation, frame_lim):
         super().__init__(map_pos, size, speed, animation, frame_lim)
+        self.point_limit = 0
 
     def chase_behaviour(self, ghosts, pacman):
         self.target = (int(pacman.map_pos.x), int(pacman.map_pos.y))
+        # print(self.map_pos)
 
     def scattered_behaviour(self):
         self.target = (25, -3)

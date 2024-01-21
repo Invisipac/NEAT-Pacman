@@ -8,7 +8,7 @@ from pygame.math import Vector2 as vec
 class Ghost(Object):
     def __init__(self, map_pos, size, speed, animation, frame_lim):
         super().__init__(map_pos, size, speed, animation, frame_lim)
-        self.state = "Chase"
+        self.state = "Scattered"
         self.target = (-10, -10)
         self.possible_path = PATH.copy()
         self.timer = 0
@@ -17,7 +17,6 @@ class Ghost(Object):
         self.allow_turning = (0, 0)
         self.mode_changed = False
         self.trapped = False
-        self.exit_offset = 0
         # controls flashing ghost
         self.turn_off = False
         self.count_flash = 0
@@ -28,6 +27,19 @@ class Ghost(Object):
 
     def scattered_behaviour(self):
         pass
+
+    def dead_behaviour(self):
+        if self.target[0] != 13.5:
+            self.target = (13.5, 11)
+        if self.map_pos == (13.5, 11):
+            self.pos.x = 336
+            self.target = (13.5, 13)
+        if self.map_pos == (13.5, 13):
+            self.change_mode("Chase")
+            self.trapped = False
+            self.target = (13.5, 11)
+
+
 
     def dist_to_pacman(self, pacman):
         return math.sqrt((self.map_pos.x - pacman.map_pos.x) ** 2 + (self.map_pos.y - pacman.map_pos.y) ** 2)
@@ -79,14 +91,18 @@ class Ghost(Object):
         return 0, 0
 
     def get_dir(self, keys=None):
+        # print(self.target, self.map_pos, self.pos)
         # print(self.mode_changed)
         # print("B", self.allow_turning)
         # print("A", self.map_pos)
         # print()
-        if self.trapped or (not self.trapped and not self.outside_box):
+        if self.target == (13.5, 13):
+            self.can_turn = [False, True]
+            self.dir = (0, 1)
+        elif self.trapped or (not self.trapped and not self.outside_box):
             min_coords = self.find_next()
             self.can_turn = [False, True]
-            print('B', self.map_pos,min_coords, get_map_letter(*min_coords) in self.possible_path, self.dir, self.can_turn)
+            # print('B', self.map_pos,min_coords, get_map_letter(*min_coords) in self.possible_path, self.dir, self.can_turn)
             self.dir = (min_coords[0] - self.map_pos.x, min_coords[1] - self.map_pos.y)
         elif self.allow_turning != self.map_pos:
             min_coords = self.find_next()
@@ -124,17 +140,8 @@ class Ghost(Object):
         # print("E MY BAD")
 
     def state_manager(self, ghosts, time, pacman):
-        if self.trapped:
-            self.speed = 12
-            if pacman.points == self.point_limit:
-                self.trapped = False
-                self.mode_changed = True
-                # self.can_turn = [True, True]
-                self.target = (13.5, 11)
-        else:
-            self.speed = 6
-
         if self.state == "Chase":
+            self.speed = 8
             if self.outside_box:
                 self.chase_behaviour(ghosts, pacman)
             self.timer += time
@@ -143,6 +150,7 @@ class Ghost(Object):
                 # self.change_mode("Frightened")
 
         elif self.state == "Frightened":
+            self.speed = 12
             self.timer += time
 
             if self.timer > 4000:
@@ -153,12 +161,26 @@ class Ghost(Object):
                 if self.count_flash == 9:
                     # pass
                     self.change_mode("Chase")
+
         elif self.state == "Scattered":
-            self.scattered_behaviour()
+            self.speed = 8
+            if self.outside_box:
+                self.scattered_behaviour()
+
+        elif self.state == "Dead":
+            self.speed = 8
+            self.dead_behaviour()
+
+        if self.trapped:
+            self.speed = 24
+            if pacman.points == self.point_limit:
+                self.trapped = False
+                self.mode_changed = True
+                self.target = (13.5, 11)
 
     def update(self, ghosts, time, pacman):
         if not self.trapped:
-            if not self.outside_box:
+            if not self.outside_box or self.state == "Dead":
                 if EXIT not in self.possible_path:
                     self.possible_path.append(EXIT)
                 # print('a', str(self.map_pos), str(self.possible_path))
@@ -167,18 +189,25 @@ class Ghost(Object):
                     self.possible_path.remove(EXIT)
         if self.trapped:
             self.can_turn = [False, True]
-            
+
         self.state_manager(ghosts, time, pacman)
-        super().update_all(self.trapped, self.outside_box)
+
+        if self.map_pos.y == 14 and (self.map_pos.x <= 5 or self.map_pos.x >= 22):
+            self.speed = 12
+
+        super().update_all(self.state, self.outside_box)
         self.move(self.dir, self.trapped, self.possible_path)
 
     def show(self, screen):
         frame_translation = {(1, 0): 0, (-1, 0): 1, (0, -1): 2, (0, 1): 3}
-        if self.state != "Frightened":
+        if self.state in ["Chase", "Scattered"]:
             screen.blit(self.animation[frame_translation[(self.dir[0], self.dir[1])]][self.frame],
                         (self.pos.x - self.size / 2, self.pos.y - self.size / 2))
-        else:
+        elif self.state == "Frightened":
             screen.blit(dead_ghost_sprites[1 if self.turn_off else 0][self.frame],
+                        (self.pos.x - self.size / 2, self.pos.y - self.size / 2))
+        else:
+            screen.blit(dead_ghost_sprites[2][frame_translation[(self.dir[0], self.dir[1])]],
                         (self.pos.x - self.size / 2, self.pos.y - self.size / 2))
 
         # pygame.draw.circle(screen, (255, 0, 0), (self.target[0] * RATIO[0] + RATIO[0] / 2, self.target[1] * RATIO[1] + RATIO[1] / 2), self.size / 2)

@@ -5,14 +5,16 @@ from ghosts import RedGhost, PinkGhost, BlueGhost, OrangeGhost
 from pacman import Pacman
 from variables import *
 
+base_speed = 8
+
 
 class Game:
     def __init__(self, screen) -> None:
-        self.pacman = Pacman((13.5, 23), 39, 4, pacman_sprites, 3)
-        self.redGhost = RedGhost((13.5, 11), 42, 4, ghost_sprites[0], 2)
-        self.pinkGhost = PinkGhost((11.5, 14), 42, 6, ghost_sprites[1], 2)
-        self.blueGhost = BlueGhost((13.5, 14), 42, 8, ghost_sprites[2], 2)
-        self.orangeGhost = OrangeGhost((15.5, 14), 42, 6, ghost_sprites[3], 2)
+        self.pacman = Pacman((13.5, 23), 39, RATIO[0] / 4, pacman_sprites, 3)
+        self.redGhost = RedGhost((13.5, 11), 42, RATIO[0] / 3, ghost_sprites[0], 2)
+        self.pinkGhost = PinkGhost((11.5, 14), 42, RATIO[0] / 3, ghost_sprites[1], 2)
+        self.blueGhost = BlueGhost((13.5, 14), 42, RATIO[0] / 3, ghost_sprites[2], 2)
+        self.orangeGhost = OrangeGhost((15.5, 14), 42, RATIO[0] / 3, ghost_sprites[3], 2)
         self.ghosts = [self.redGhost, self.pinkGhost, self.blueGhost, self.orangeGhost]
 
         self.screen = screen
@@ -40,7 +42,7 @@ class Game:
             # self.pacman.update(pg.key.get_pressed())
             self.screen.blit(bg, (0, 0))
             # self.screen.fill((0, 0, 0))
-            print(self.pacman.points)
+            # print(self.pacman.points)
             for i in range(len(self.dots) - 1, -1, -1):
                 dot = self.dots[i]
                 dot.show(self.screen)
@@ -48,10 +50,9 @@ class Game:
                     self.pacman.points += 1
                     if dot.power_dot:
                         for ghost in self.ghosts:
-                            ghost.change_mode("Frightened")
+                            if ghost.state != "Dead":
+                                ghost.change_mode("Frightened")
                     self.dots.remove(dot)
-            print(f"MOUSEX: {pg.mouse.get_pos()[0]}, MOUSEY: {pg.mouse.get_pos()[1]}")
-            print(self.ghosts[2].pos)
             for j, y in enumerate(map):
                 for i, x in enumerate(y):
                     # pg.draw.rect(self.screen, (0,255,0),(i*RATIO[0], j*RATIO[0], RATIO[0], RATIO[0]), 1)
@@ -64,12 +65,17 @@ class Game:
             for ghost in self.ghosts:
                 ghost.update(self.ghosts, clock.get_time(), self.pacman)
                 ghost.show(self.screen)
-                # if self.pacman.eat(ghost):
-                #     ghost.
-            
+                if self.pacman.eat(ghost, "ghost"):
+                    if ghost.state == "Frightened":
+                        ghost.state = "Dead"
+                        # print("YAY I ATE A GHOST")
+                    if ghost.state in ["Chase", "Scattered"]:
+                        pass
+                        # print("FUCK I DIED")
+
             # print(clock.get_fps())
             pg.display.update()
-            clock.tick(30)
+            clock.tick(60)
 
 
 game = Game(display)
