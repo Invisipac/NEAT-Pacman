@@ -17,6 +17,7 @@ class Ghost(Object):
         self.allow_turning = (0, 0)
         self.mode_changed = False
         self.trapped = False
+        self.exit_offset = 0
         # controls flashing ghost
         self.turn_off = False
         self.count_flash = 0
@@ -43,7 +44,7 @@ class Ghost(Object):
             backward = (self.map_pos.x - self.dir[0], self.map_pos.y - self.dir[1])
             if not self.trapped:
                 self.outside_box = self.map_pos.x < 10 or self.map_pos.x > 16 or self.map_pos.y < 12 or self.map_pos.y > 16
-            
+
             if self.trapped:
                 if get_map_letter(*forward) in self.possible_path:
                     neighbors[forward] = self.dist_to_target(forward)
@@ -59,10 +60,21 @@ class Ghost(Object):
 
             # print('A', self.map_pos, neighbors)
 
-            if self.state != "Frightened" or self.trapped:
-                min_coords = min(neighbors, key=neighbors.get)
+            if not self.outside_box and not self.trapped:
+                if self.map_pos.x < 13.5:
+                    min_coords = (self.map_pos.x + 1, self.map_pos.y)
+                elif self.map_pos.x > 13.5:
+                    min_coords = (self.map_pos.x - 1, self.map_pos.y)
+                else:
+                    min_coords = min(neighbors, key=neighbors.get)
             else:
-                min_coords = random.choice(list(neighbors.keys()))
+                if self.state != "Frightened" or self.trapped:
+                    min_coords = min(neighbors, key=neighbors.get)
+                else:
+                    if self.outside_box:
+                        min_coords = random.choice(list(neighbors.keys()))
+                    else:
+                        min_coords = min(neighbors, key=neighbors.get)
             return min_coords
         return 0, 0
 
@@ -73,7 +85,7 @@ class Ghost(Object):
         # print()
         if self.trapped or (not self.trapped and not self.outside_box):
             min_coords = self.find_next()
-            self.can_turn = [True, True]
+            self.can_turn = [False, True]
             print('B', self.map_pos,min_coords, get_map_letter(*min_coords) in self.possible_path, self.dir, self.can_turn)
             self.dir = (min_coords[0] - self.map_pos.x, min_coords[1] - self.map_pos.y)
         elif self.allow_turning != self.map_pos:
@@ -117,8 +129,8 @@ class Ghost(Object):
             if pacman.points == self.point_limit:
                 self.trapped = False
                 self.mode_changed = True
-                self.can_turn = [True, True]
-                self.target = (15, 12)
+                # self.can_turn = [True, True]
+                self.target = (13.5, 11)
         else:
             self.speed = 6
 
@@ -157,7 +169,7 @@ class Ghost(Object):
             self.can_turn = [False, True]
             
         self.state_manager(ghosts, time, pacman)
-        super().update_all(self.trapped)
+        super().update_all(self.trapped, self.outside_box)
         self.move(self.dir, self.trapped, self.possible_path)
 
     def show(self, screen):

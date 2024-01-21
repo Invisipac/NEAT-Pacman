@@ -17,7 +17,7 @@ class PinkGhost(Ghost):
         super().__init__(map_pos, size, speed, animation, frame_lim)
         self.trapped = True
         self.dir = (0, 1)
-        self.point_limit = 25
+        self.point_limit = 18
     def chase_behaviour(self, ghosts, pacman):
         self.target = (int(pacman.map_pos.x) + 4 * pacman.dir[0],
                        int(pacman.map_pos.y) + 4 * pacman.dir[1])
