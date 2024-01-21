@@ -17,7 +17,7 @@ class Evolution:
         p.add_reporter(neat.StatisticsReporter())
         # p.add_reporter(neat.Checkpointer(1))
 
-        p.run(self.game.main, 20)
+        p.run(self.game.main, 50)
 
 E = Evolution()
 

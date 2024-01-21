@@ -11,15 +11,29 @@ class Pacman(Object):
         self.points = points
         self.dead = False
         self.not_move = 0
+        ####### AI VARIABLES #####
         self.surrounding_walls = []
-
+        self.temp_dir = self.dir
+        self.visited_squares = []
+    def found_new_square(self):
+        if self.map_pos not in self.visited_squares:
+            self.visited_squares.append(self.map_pos)
+            return True
+        else:
+            return False
+    def is_turned(self):
+        if self.dir != self.temp_dir:
+            self.temp_dir = self.dir
+            return True
+        else:
+            return False
     def find_surrounding_walls(self):
-        forward = get_map_letter((self.map_pos.x + self.dir[0]) % len(map[0]), self.map_pos.y + self.dir[1]) in PATH
-        left = get_map_letter((self.map_pos.x + self.dir[1]) % len(map[0]), self.map_pos.y + self.dir[0]) in PATH
-        right = get_map_letter((self.map_pos.x - self.dir[1]) % len(map[0]), self.map_pos.y - self.dir[0]) in PATH
-        backward = get_map_letter((self.map_pos.x - self.dir[0]) % len(map[0]), self.map_pos.y - self.dir[1]) in PATH
+        up = 1 if get_map_letter((self.map_pos.x) % len(map[0]), self.map_pos.y - 1) in PATH else -1
+        left = 1 if get_map_letter((self.map_pos.x - 1) % len(map[0]), self.map_pos.y) in PATH else -1
+        right = 1 if get_map_letter((self.map_pos.x + 1) % len(map[0]), self.map_pos.y) in PATH else -1
+        down = 1 if get_map_letter((self.map_pos.x) % len(map[0]), self.map_pos.y + 1) in PATH else -1
 
-        self.surrounding_walls = [int(forward), int(left), int(right), int(backward)]
+        self.surrounding_walls = [int(up), int(left), int(right), int(down)]
 
 
     def eat(self, oj, tp="dot"):
