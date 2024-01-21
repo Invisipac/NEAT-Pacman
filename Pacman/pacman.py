@@ -11,6 +11,16 @@ class Pacman(Object):
         self.points = points
         self.dead = False
         self.not_move = 0
+        self.surrounding_walls = []
+
+    def find_surrounding_walls(self):
+        forward = get_map_letter((self.map_pos.x + self.dir[0]) % len(map[0]), self.map_pos.y + self.dir[1]) in PATH
+        left = get_map_letter((self.map_pos.x + self.dir[1]) % len(map[0]), self.map_pos.y + self.dir[0]) in PATH
+        right = get_map_letter((self.map_pos.x - self.dir[1]) % len(map[0]), self.map_pos.y - self.dir[0]) in PATH
+        backward = get_map_letter((self.map_pos.x - self.dir[0]) % len(map[0]), self.map_pos.y - self.dir[1]) in PATH
+
+        self.surrounding_walls = [int(forward), int(left), int(right), int(backward)]
+
 
     def eat(self, oj, tp="dot"):
         if tp == "dot":
@@ -18,8 +28,27 @@ class Pacman(Object):
         else:
             return math.sqrt((self.map_pos.x - oj.map_pos.x) ** 2 + (self.map_pos.y - oj.map_pos.y) ** 2) <= 1
 
+    def ai_update(self, key):
+        super().update_all("", True, self.dead)
+        self.find_surrounding_walls()
+        # print(self.not_move, "dd")
+        if not self.dead and self.not_move == 0:
+            if key == pg.K_w:#keys[pg.K_w]:
+                self.wannabe_dir = (0, -1)
+            elif key == pg.K_s:#keys[pg.K_s]:
+                self.wannabe_dir = (0, 1)
+            elif key == pg.K_a:#keys[pg.K_a]:
+                self.wannabe_dir = (-1, 0)
+            elif key == pg.K_d:#keys[pg.K_d]:
+                self.wannabe_dir = (1, 0)
+
+            self.moved = True
+            if not self.move(self.wannabe_dir):
+                self.moved = self.move(self.dir)
+
     def update(self, keys):
         super().update_all("", True, self.dead)
+        self.find_surrounding_walls()
         # print(self.not_move, "dd")
         if not self.dead and self.not_move == 0:
             if keys[pg.K_w]:

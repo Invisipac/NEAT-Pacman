@@ -4,6 +4,8 @@ from dots import Dot
 from ghosts import RedGhost, PinkGhost, BlueGhost, OrangeGhost
 from pacman import Pacman
 from variables import *
+import neat
+from math import sqrt
 
 base_speed = 8
 
@@ -31,6 +33,16 @@ class Game:
                     self.dots.append(Dot((i, j)))
                 if x in POWER_DOTS:
                     self.dots.append(Dot((i, j), True))
+
+        ################################### NEAT VARIABLES ##################################
+        self.gen = -1
+        self.nets = []
+        self.ge = []
+        self.pacmen = []
+        self.dist_to_prev = 0
+        self.gen_timer_for_moving = 0
+
+        
 
     def reset(self):
         self.pacman = Pacman((13.5, 23), 39, RATIO[0] / 4, pacman_sprites, 3, self.pacman.lives - 1, self.pacman.points)
@@ -120,14 +132,57 @@ class Game:
 
                 if self.ghost_counter < 3:
                     self.ghost_counter += 1
-    def main(self):
+    def dist_to_target(self, start, end):
+        return sqrt((start[0] - end[0]) ** 2 + (start[1] - end[1]) ** 2)
+    def update_pacmen(self):
+        for idx, p in enumerate(self.pacmen):
+            p.find_surrounding_walls()
+            output = self.nets[idx].activate(
+                (p.surrounding_walls[0],
+                p.surrounding_walls[1],
+                p.surrounding_walls[2],
+                p.surrounding_walls[3],)
+            )
+            keys = [pg.K_w, pg.K_a, pg.K_s, pg.K_d]
+            # p.update(pg.key.get_pressed())
+            p.ai_update(keys[output.index(max(output))])
+            dist = self.dist_to_target((324, 552), p.pos)
+            print(idx, abs(dist - self.dist_to_prev))
+            if abs(dist - self.dist_to_prev) > 100:
+                self.ge[idx].fitness += 1
+                self.dist_to_prev = dist
+            else:
+                self.ge[idx].fitness -= 2
+            
+    def redraw_pacmen(self):
+        for p in self.pacmen:
+            p.show(self.screen)
+    def reset_gen(self):
+        self.ge = []
+        self.nets = []
+        self.pacmen = []
+        self.gen_timer_for_moving = 0
+    def main(self, genomes, config):
+        self.reset_gen()
+        self.gen += 1
+        
+        for _, g in genomes:
+            net = neat.nn.FeedForwardNetwork.create(g, config)
+            self.nets.append(net)
+            self.pacmen.append(Pacman((13.5, 23), 39, RATIO[0] / 4, pacman_sprites, 3, 3))
+            g.fitness = 0
+            self.ge.append(g)
+
 
         timer = 0
         self.clock = pg.time.Clock()
         run = True
         while run:
             timer += self.clock.get_time()
+            self.gen_timer_for_moving += self.clock.get_time()
             self.ghost_timer += self.clock.get_time()
+            # print(self.gen_timer_for_moving)
+            
             # for i in self.ghosts:
             #     print(i.timer, end=", ")
             # print()
@@ -139,10 +194,31 @@ class Game:
             # self.pacman_eating_ghosts()
             
             for event in pg.event.get():
-                if event.type == pg.QUIT:
+                if event.type == pg.QUIT or self.gen_timer_for_moving > 5000:
                     run = False
+                    self.gen += 1
             self.screen.blit(bg, (0, 0))
-            # self.screen.fill((0, 0, 0))
+            
+            # self.pacman_eating_dots()
+            # self.pacman_eating_ghosts()
+            # self.releasing_ghosts()
+            
+            # self.pacman.update(pg.key.get_pressed())
+            # self.pacman.show(self.screen)
+            # print(clock.get_fps())
+            self.update_pacmen()
+            self.redraw_pacmen()
+            pg.display.update()
+            self.clock.tick(60)
+
+
+game = Game(display)
+
+#game.main()
+
+
+
+# self.screen.fill((0, 0, 0))
 
             # slow_pacman = False
             # for i in range(len(self.dots) - 1, -1, -1):
@@ -194,9 +270,7 @@ class Game:
             #             if ghost.state in ["Chase", "Scattered"]:
             #                 self.pacman.frame = 0
             #                 self.pacman.dead = True
-            self.pacman_eating_dots()
-            self.pacman_eating_ghosts()
-            self.releasing_ghosts()
+            
             # if self.pacman.frame == 13:
             #     self.pacman.dead = False
             #     self.pacman.frame = 0
@@ -225,14 +299,3 @@ class Game:
             #         if self.ghost_counter < 3:
             #             self.ghost_counter += 1
             # print(self.ghost_timer)
-
-            self.pacman.update(pg.key.get_pressed())
-            self.pacman.show(self.screen)
-            # print(clock.get_fps())
-            pg.display.update()
-            self.clock.tick(60)
-
-
-game = Game(display)
-
-game.main()
