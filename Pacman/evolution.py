@@ -10,12 +10,12 @@ class Evolution:
     def run(self, config_path):
         config = neat.config.Config(neat.DefaultGenome, neat.DefaultReproduction, neat.DefaultSpeciesSet,
                                     neat.DefaultStagnation, config_path)
-
         p = neat.Population(config)
+        p = neat.Checkpointer.restore_checkpoint("neat-checkpoint-94")
 
         p.add_reporter(neat.StdOutReporter(True))
         p.add_reporter(neat.StatisticsReporter())
-        # p.add_reporter(neat.Checkpointer(1))
+        p.add_reporter(neat.Checkpointer(5))
 
         p.run(self.game.main, 50)
 

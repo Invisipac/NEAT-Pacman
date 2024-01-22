@@ -18,6 +18,7 @@ class Pacman(Object):
     def found_new_square(self):
         if self.map_pos not in self.visited_squares:
             self.visited_squares.append(self.map_pos)
+            # print('a')
             return True
         else:
             return False
@@ -44,6 +45,7 @@ class Pacman(Object):
 
     def ai_update(self, key):
         super().update_all("", True, self.dead)
+        
         self.find_surrounding_walls()
         # print(self.not_move, "dd")
         if not self.dead and self.not_move == 0:

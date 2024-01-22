@@ -1,7 +1,7 @@
 [NEAT]
 fitness_criterion     = max
-fitness_threshold     = 245
-pop_size              = 30
+fitness_threshold     = 250
+pop_size              = 5
 reset_on_extinction   = True
 
 [DefaultGenome]
@@ -45,17 +45,17 @@ node_delete_prob        = 0.1
 
 # network parameters
 num_hidden              = 0
-num_inputs              = 4
+num_inputs              = 8
 num_outputs             = 4
 
 # node response options
 response_init_mean      = 1.0
-response_init_stdev     = 0.0
+response_init_stdev     = 1.0
 response_max_value      = 30.0
 response_min_value      = -30.0
-response_mutate_power   = 0.0
-response_mutate_rate    = 0.0
-response_replace_rate   = 0.0
+response_mutate_power   = 0.5
+response_mutate_rate    = 0.7
+response_replace_rate   = 0.1
 
 # connection weight options
 weight_init_mean        = 0.0

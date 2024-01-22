@@ -8,7 +8,7 @@ from pygame.math import Vector2 as vec
 class Ghost(Object):
     def __init__(self, map_pos, size, speed, animation, frame_lim):
         super().__init__(map_pos, size, speed, animation, frame_lim)
-        self.state = "Scattered"
+        self.state = "Chase"
         self.target = (-10, -10)
         self.possible_path = PATH.copy()
         self.timer = 0
@@ -151,12 +151,12 @@ class Ghost(Object):
             if self.outside_box:
                 self.chase_behaviour(ghosts, pacman)
 
-            if self.mode_counter < len(times):
-                if self.timer > times[self.mode_counter]:
-                    self.change_mode("Scattered")
-                    self.old_mode = "Scattered"
-                    self.mode_counter += 1
-                    self.timer = 0
+            # if self.mode_counter < len(times):
+            #     if self.timer > times[self.mode_counter]:
+            #         self.change_mode("Scattered")
+            #         self.old_mode = "Scattered"
+            #         self.mode_counter += 1
+            #         self.timer = 0
 
         elif self.state == "Frightened":
             self.speed = 12
@@ -170,18 +170,18 @@ class Ghost(Object):
                 if self.count_flash == 9:
                     self.change_mode(self.old_mode)
 
-        elif self.state == "Scattered":
-            self.speed = 8
-            self.timer += time
+        # elif self.state == "Scattered":
+        #     self.speed = 8
+        #     self.timer += time
 
-            if self.outside_box:
-                self.scattered_behaviour()
+        #     if self.outside_box:
+        #         self.scattered_behaviour()
 
-            if self.timer > times[self.mode_counter]:
-                self.change_mode("Chase")
-                self.old_mode = "Chase"
-                self.mode_counter += 1
-                self.timer = 0
+        #     if self.timer > times[self.mode_counter]:
+        #         self.change_mode("Chase")
+        #         self.old_mode = "Chase"
+        #         self.mode_counter += 1
+        #         self.timer = 0
 
         elif self.state == "Dead":
             self.speed = 8
