@@ -135,6 +135,20 @@ class Game:
                     self.ghost_counter += 1
     def dist_to_target(self, start, end):
         return sqrt((start[0] - end[0]) ** 2 + (start[1] - end[1]) ** 2)
+    def draw_ghosts(self):
+        for ghost in self.ghosts:
+            ghost.update(self.ghosts, self.clock.get_time(), self.pacman, self.ghost_timer)
+            ghost.show(self.screen)
+    def reset_ghosts(self):
+        self.redGhost = RedGhost((13.5, 11), 42, RATIO[0] / 3, ghost_sprites[0], 2)
+        self.blueGhost = BlueGhost((11.5, 14), 42, RATIO[0] / 3, ghost_sprites[2], 2)
+        self.pinkGhost = PinkGhost((13.5, 14), 42, RATIO[0] / 3, ghost_sprites[1], 2)
+        self.orangeGhost = OrangeGhost((15.5, 14), 42, RATIO[0] / 3, ghost_sprites[3], 2)
+        self.ghosts = [self.redGhost, self.pinkGhost, self.blueGhost, self.orangeGhost]
+
+        self.ghost_timer = 0
+        self.ghost_counter = 1
+        self.point_counter = 0
     def update_pacmen(self):
         
         for idx, p in enumerate(self.pacmen):
@@ -151,18 +165,26 @@ class Game:
                 p.surrounding_walls[1],
                 p.surrounding_walls[2],
                 p.surrounding_walls[3],
-                # distances_to_ghosts["red_dist"],
-                # distances_to_ghosts["blue_dist"],
-                # distances_to_ghosts["orange_dist"],
-                # distances_to_ghosts["pink_dist"]
+                # 0, 
+                # 0,
+                # 0,
+                # 0
+                distances_to_ghosts["red_dist"],
+                distances_to_ghosts["blue_dist"],
+                distances_to_ghosts["orange_dist"],
+                distances_to_ghosts["pink_dist"]
                 )
             )
+            for dist in distances_to_ghosts:
+                if distances_to_ghosts[dist] > 10:
+                    self.ge[idx].fitness += 0.3
+                else:
+                    self.ge[idx].fitness -= 4
             # print(f"WALLS {p.surrounding_walls}")
             # possible_output = []
             # for i, n in enumerate(p.surrounding_walls):
             #     if n == 1:
             #         possible_output.append(output[i])
-            keys = {pg.K_w: (0, -1), pg.K_a: (-1, 0), pg.K_d: (1, 0), pg.K_s: (0, 1)}
             # p.update(pg.key.get_pressed())
             # print(idx, p.surrounding_walls, output)
             # print(idx, end=' ')
@@ -179,12 +201,15 @@ class Game:
             # if p.is_turned():
             #     self.ge[idx].fitness -= 1
             # else:
+            keys = {pg.K_w: (0, -1), pg.K_a: (-1, 0), pg.K_d: (1, 0), pg.K_s: (0, 1)}
+            keys_dir = ['for', 'left', 'right', 'back']
             
             val = max(output)
             # self.pacman.update(pg.key.get_pressed())
             move = list(keys.keys())[output.index(val)]
-            p.ai_update(list(keys.keys())[output.index(val)])
-            print(idx, self.gen, self.ge[idx].fitness)
+            # p.ai_update(list(keys.keys())[output.index(val)])
+            p.ai_update(keys_dir[output.index(val)], self.clock.get_time())
+            # print(idx, self.gen, self.ge[idx].fitness)
             next_spot = get_map_letter((p.map_pos.x + keys[move][0]) % len(map[0]), (p.map_pos.y + keys[move][1]))
 
             # if next_spot in PATH:
@@ -196,12 +221,19 @@ class Game:
             #     self.ge[idx].fitness -= 10
             # else:
             #     self.ge[idx].fitness += 0.1
-            if p.map_pos not in self.visited_squares:
-                # print('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
-                self.visited_squares.append(p.map_pos.copy())
-                self.ge[idx].fitness += 10
-            else:
-                self.ge[idx].fitness -= 3
+            value = p.found_new_square()
+            for ghost in self.ghosts:
+                if p.eat(ghost, 'ghost'):
+                    self.ge[idx].fitness -= 3
+            if value is not None:
+                if value:
+                    # self.visited_squares.append(p.map_pos.copy())
+                    self.ge[idx].fitness += 0.5
+                    # print('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
+                else:
+                    self.ge[idx].fitness -= 1.5
+            
+            # print(idx, p.visited_squares)
             # #     self.ge[idx].fitness += 0.2
 
             # if p.found_new_square():
@@ -214,7 +246,7 @@ class Game:
         for p in self.pacmen:
             p.show(self.screen)
     def reset_gen(self):
-        print(self.visited_squares)
+        # print(self.visited_squares)
         self.ge = []
         self.nets = []
         self.pacmen = []
@@ -230,7 +262,7 @@ class Game:
             net = neat.nn.FeedForwardNetwork.create(g, config)
             self.nets.append(net)
             self.pacmen.append(Pacman((13.5, 23), 39, RATIO[0] / 4, pacman_sprites, 3, 3))
-            # self.pacman = self.pacmen[0]
+            self.pacman = self.pacmen[0]
             g.fitness = 0
             self.ge.append(g)
 
@@ -241,10 +273,11 @@ class Game:
             timer += self.clock.get_time()
             self.gen_timer_for_moving += self.clock.get_time()
             self.ghost_timer += self.clock.get_time()
-            if self.gen_timer_for_moving > 5000:# or self.pacman.dead:
+            if self.gen_timer_for_moving > 15000:# or self.pacman.dead:
                 run = False
-                self.reset_gen()
                 # self.reset()
+                self.reset_ghosts()
+                self.reset_gen()
                 # self.gen += 1
             
             # for i in self.ghosts:
@@ -263,9 +296,10 @@ class Game:
                     self.gen += 1
             self.screen.blit(bg, (0, 0))
             
-            # self.pacman_eating_dots()
+            self.pacman_eating_dots()
+            self.draw_ghosts()
             # self.pacman_eating_ghosts()
-            # self.releasing_ghosts()
+            self.releasing_ghosts()
             
             # self.pacman.update(pg.key.get_pressed())
             self.update_pacmen()

@@ -15,13 +15,19 @@ class Pacman(Object):
         self.surrounding_walls = []
         self.temp_dir = self.dir
         self.visited_squares = []
+        self.time_since_move = 0
+
     def found_new_square(self):
         if self.map_pos not in self.visited_squares:
-            self.visited_squares.append(self.map_pos)
+            self.time_since_move = 0
+            self.visited_squares.append(self.map_pos.copy())
             # print('a')
             return True
         else:
-            return False
+            if self.time_since_move > 500:
+                self.time_since_move = 0
+                return False
+            return None
     def is_turned(self):
         if self.dir != self.temp_dir:
             self.temp_dir = self.dir
@@ -43,20 +49,20 @@ class Pacman(Object):
         else:
             return math.sqrt((self.map_pos.x - oj.map_pos.x) ** 2 + (self.map_pos.y - oj.map_pos.y) ** 2) <= 1
 
-    def ai_update(self, key):
+    def ai_update(self, key, time):
         super().update_all("", True, self.dead)
-        
+        self.time_since_move += time
         self.find_surrounding_walls()
         # print(self.not_move, "dd")
         if not self.dead and self.not_move == 0:
-            if key == pg.K_w:#keys[pg.K_w]:
-                self.wannabe_dir = (0, -1)
-            elif key == pg.K_s:#keys[pg.K_s]:
-                self.wannabe_dir = (0, 1)
-            elif key == pg.K_a:#keys[pg.K_a]:
-                self.wannabe_dir = (-1, 0)
-            elif key == pg.K_d:#keys[pg.K_d]:
-                self.wannabe_dir = (1, 0)
+            if key == 'for':#keys[pg.K_w]:
+                self.wannabe_dir = self.dir
+            elif key == 'left':#keys[pg.K_s]:
+                self.wannabe_dir = (self.dir[1], self.dir[0])
+            elif key == 'right':#keys[pg.K_a]:
+                self.wannabe_dir = (-self.dir[1], -self.dir[0])
+            elif key == 'back':#keys[pg.K_d]:
+                self.wannabe_dir = (-self.dir[0], -self.dir[1])
 
             self.moved = True
             if not self.move(self.wannabe_dir):
