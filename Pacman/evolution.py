@@ -11,7 +11,7 @@ class Evolution:
         config = neat.config.Config(neat.DefaultGenome, neat.DefaultReproduction, neat.DefaultSpeciesSet,
                                     neat.DefaultStagnation, config_path)
         p = neat.Population(config)
-        p = neat.Checkpointer.restore_checkpoint("./Pacman/checkpoints/neat-checkpoint-94")
+        # p = neat.Checkpointer.restore_checkpoint("./Pacman/checkpoints/neat-checkpoint-94")
 
         p.add_reporter(neat.StdOutReporter(True))
         p.add_reporter(neat.StatisticsReporter())

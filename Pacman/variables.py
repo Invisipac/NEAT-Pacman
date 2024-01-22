@@ -9,8 +9,8 @@ WIDTH, HEIGHT = RATIO[0] * GRID_SIZE[0], RATIO[1] * GRID_SIZE[1]
 
 display = pg.display.set_mode((WIDTH, HEIGHT))
 
-# fix_files = "./Pacman/"
-fix_files = ""
+fix_files = "./Pacman/"
+# fix_files = ""
 
 map = open(f"{fix_files}true-map.txt", "r").read().split()
 

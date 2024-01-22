@@ -151,10 +151,10 @@ class Game:
                 p.surrounding_walls[1],
                 p.surrounding_walls[2],
                 p.surrounding_walls[3],
-                distances_to_ghosts["red_dist"],
-                distances_to_ghosts["blue_dist"],
-                distances_to_ghosts["orange_dist"],
-                distances_to_ghosts["pink_dist"]
+                # distances_to_ghosts["red_dist"],
+                # distances_to_ghosts["blue_dist"],
+                # distances_to_ghosts["orange_dist"],
+                # distances_to_ghosts["pink_dist"]
                 )
             )
             # print(f"WALLS {p.surrounding_walls}")
@@ -192,10 +192,10 @@ class Game:
             # else:
             #     self.ge[idx].fitness -= 5
             
-            if self.pacman.dead:
-                self.ge[idx].fitness -= 10
-            else:
-                self.ge[idx].fitness += 0.1
+            # if self.pacman.dead:
+            #     self.ge[idx].fitness -= 10
+            # else:
+            #     self.ge[idx].fitness += 0.1
             if p.map_pos not in self.visited_squares:
                 # print('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
                 self.visited_squares.append(p.map_pos.copy())
@@ -230,50 +230,50 @@ class Game:
             net = neat.nn.FeedForwardNetwork.create(g, config)
             self.nets.append(net)
             self.pacmen.append(Pacman((13.5, 23), 39, RATIO[0] / 4, pacman_sprites, 3, 3))
-            self.pacman = self.pacmen[0]
+            # self.pacman = self.pacmen[0]
             g.fitness = 0
             self.ge.append(g)
 
-            timer = 0
-            self.clock = pg.time.Clock()
-            run = True
-            while run:
-                timer += self.clock.get_time()
-                self.gen_timer_for_moving += self.clock.get_time()
-                self.ghost_timer += self.clock.get_time()
-                if self.gen_timer_for_moving > 10000 or self.pacman.dead:
-                    run = False
-                    self.reset_gen()
-                    self.reset()
-                    # self.gen += 1
-                
-                # for i in self.ghosts:
-                #     print(i.timer, end=", ")
-                # print()
-                # for i in self.ghosts:
-                #     print(i.state, end=", ")
-                # print()
+        timer = 0
+        self.clock = pg.time.Clock()
+        run = True
+        while run:
+            timer += self.clock.get_time()
+            self.gen_timer_for_moving += self.clock.get_time()
+            self.ghost_timer += self.clock.get_time()
+            if self.gen_timer_for_moving > 5000:# or self.pacman.dead:
+                run = False
+                self.reset_gen()
+                # self.reset()
+                # self.gen += 1
+            
+            # for i in self.ghosts:
+            #     print(i.timer, end=", ")
+            # print()
+            # for i in self.ghosts:
+            #     print(i.state, end=", ")
+            # print()
 
-                
-                # self.pacman_eating_ghosts()
-                
-                for event in pg.event.get():
-                    if event.type == pg.QUIT:
-                        run = False
-                        self.gen += 1
-                self.screen.blit(bg, (0, 0))
-                
-                self.pacman_eating_dots()
-                self.pacman_eating_ghosts()
-                self.releasing_ghosts()
-                
-                # self.pacman.update(pg.key.get_pressed())
-                self.update_pacmen()
-                # self.pacman.show(self.screen)
-                # print(clock.get_fps())
-                self.redraw_pacmen()
-                pg.display.update()
-                self.clock.tick(60)
+            
+            # self.pacman_eating_ghosts()
+            
+            for event in pg.event.get():
+                if event.type == pg.QUIT:
+                    run = False
+                    self.gen += 1
+            self.screen.blit(bg, (0, 0))
+            
+            # self.pacman_eating_dots()
+            # self.pacman_eating_ghosts()
+            # self.releasing_ghosts()
+            
+            # self.pacman.update(pg.key.get_pressed())
+            self.update_pacmen()
+            # self.pacman.show(self.screen)
+            # print(clock.get_fps())
+            self.redraw_pacmen()
+            pg.display.update()
+            self.clock.tick(60)
 
 
 game = Game(display)
