@@ -6,6 +6,7 @@ from pacman import Pacman
 from variables import *
 import neat
 from math import sqrt
+import pickle, os
 from random import choice
 
 base_speed = 8
@@ -42,6 +43,21 @@ class Game:
         self.pacmen = []
         self.gen_timer_for_moving = 0
         self.visited_squares = []
+        self.best_genome = []
+        self.best_genomes = []
+        self.replay = True
+        best_nomes = []
+        best = None
+        with open("winner.pkl", 'rb') as f:
+            best = pickle.load(f)
+            f.close()
+        if not os.stat('winners.pkl').st_size == 0:
+            with open('winners.pkl', 'rb') as f:
+                best_nomes = pickle.load(f)
+                f.close()
+        self.best_genomes = [(i + 1, b) for i, b in enumerate(best_nomes)]
+        # self.best_genome = [(1, best)]
+
 
         
 
@@ -69,16 +85,16 @@ class Game:
                     if self.pacman.lives < 3:
                         self.point_counter += 1
                     self.ghost_timer = 0
-                    # if dot.power_dot:
-                    #     self.score += 50
-                    #     self.pacman.not_move = 3
-                    #     for ghost in self.ghosts:
-                    #         if ghost.state != "Dead":
-                    #             ghost.change_mode("Frightened")
-                    #             self.ghost_kill_count = 0
-                    # else:
-                    #     self.pacman.not_move = 1
-                    #     self.score += 10
+                    if dot.power_dot:
+                        self.score += 50
+                        self.pacman.not_move = 3
+                        for ghost in self.ghosts:
+                            if ghost.state != "Dead":
+                                ghost.change_mode("Frightened")
+                                self.ghost_kill_count = 0
+                    else:
+                        self.pacman.not_move = 1
+                        self.score += 10
                     self.dots.remove(dot)
                 else:
                     if not slow_pacman:
@@ -175,56 +191,45 @@ class Game:
                 distances_to_ghosts["pink_dist"]
                 )
             )
-            for dist in distances_to_ghosts:
-                if distances_to_ghosts[dist] > 10:
-                    self.ge[idx].fitness += 0.3
-                else:
-                    self.ge[idx].fitness -= 4
-            # print(f"WALLS {p.surrounding_walls}")
-            # possible_output = []
-            # for i, n in enumerate(p.surrounding_walls):
-            #     if n == 1:
-            #         possible_output.append(output[i])
-            # p.update(pg.key.get_pressed())
-            # print(idx, p.surrounding_walls, output)
-            # print(idx, end=' ')
-            # for i in range(4):
-            #     print(self.ge[idx].nodes[i].bias, self.ge[idx].nodes[i].response)
-            # if idx == 0:
-            #     print(idx, output.index(val), p.surrounding_walls, list(round(o, 2) for o in output))
-            # print(idx, possible_output, p.surrounding_walls)
-            # if p.surrounding_walls[0]:
+            # for dist in distances_to_ghosts:
+            #     if distances_to_ghosts[dist] > 10:
+            #         self.ge[idx].fitness += 0.3
+            #     else:
+            #         self.ge[idx].fitness -= 4
+            
+            # print(output)
+            # self.pacman.update(pg.key.get_pressed())
+            # move = list(keys.keys())[output.index(val)]
+            # p.ai_update(list(keys.keys())[output.index(val)])
+            # if move != 'for':
+            #     if move in p.prev_moves:
+            #         self.ge[idx].fitness -= 4
+            #     else:
+            #         self.ge[idx].fitness += 2
+
+            
+            # if p.moved and (move != 'for' and move not in p.prev_moves):
             #     self.ge[idx].fitness += 0.5
             # else:
-            #     self.ge[idx].fitness -= 3
-            
-            # if p.is_turned():
-            #     self.ge[idx].fitness -= 1
-            # else:
+            #     self.ge[idx].fitness -= 1.5
+
             keys = {pg.K_w: (0, -1), pg.K_a: (-1, 0), pg.K_d: (1, 0), pg.K_s: (0, 1)}
             keys_dir = ['for', 'left', 'right', 'back']
-            
             val = max(output)
-            # self.pacman.update(pg.key.get_pressed())
-            move = list(keys.keys())[output.index(val)]
-            # p.ai_update(list(keys.keys())[output.index(val)])
-            p.ai_update(keys_dir[output.index(val)], self.clock.get_time())
-            # print(idx, self.gen, self.ge[idx].fitness)
-            next_spot = get_map_letter((p.map_pos.x + keys[move][0]) % len(map[0]), (p.map_pos.y + keys[move][1]))
-
-            # if next_spot in PATH:
-            #     self.ge[idx].fitness += 0.3
-            # else:
-            #     self.ge[idx].fitness -= 5
-            
-            # if self.pacman.dead:
-            #     self.ge[idx].fitness -= 10
-            # else:
-            #     self.ge[idx].fitness += 0.1
+            move = keys_dir[output.index(val)]
+            p.ai_update(move, self.clock.get_time())
             value = p.found_new_square()
+            
+            if not p.dead:
+                self.ge[idx].fitness += 0.5
+            else:
+                self.ge[idx].fitness -= 10
+
             for ghost in self.ghosts:
                 if p.eat(ghost, 'ghost'):
-                    self.ge[idx].fitness -= 3
+                    if ghost.state == "Frightened":
+                        self.ge[idx].fitness += 5
+
             if value is not None:
                 if value:
                     # self.visited_squares.append(p.map_pos.copy())
@@ -232,7 +237,7 @@ class Game:
                     # print('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
                 else:
                     self.ge[idx].fitness -= 1.5
-            
+            # print(idx, p.prev_moves, self.ge[idx].fitness)
             # print(idx, p.visited_squares)
             # #     self.ge[idx].fitness += 0.2
 
@@ -254,10 +259,15 @@ class Game:
         
         self.gen_timer_for_moving = 0
     def main(self, genomes, config):
-        
+        print(self.best_genomes[0])
         self.gen += 1
-        
-        for _, g in genomes:
+        # genomes = self.best_genome
+        # if self.replay:
+            # genomes = self.best_genomes[:3]
+        ge = sorted(genomes, key= lambda x : x[1].fitness if x[1].fitness else 0, reverse=True)[:3]
+        # genomes_ = genomes[:3]
+        # print(genomes)
+        for _, g in ge:
             
             net = neat.nn.FeedForwardNetwork.create(g, config)
             self.nets.append(net)
@@ -266,48 +276,55 @@ class Game:
             g.fitness = 0
             self.ge.append(g)
 
-        timer = 0
-        self.clock = pg.time.Clock()
-        run = True
-        while run:
-            timer += self.clock.get_time()
-            self.gen_timer_for_moving += self.clock.get_time()
-            self.ghost_timer += self.clock.get_time()
-            if self.gen_timer_for_moving > 15000:# or self.pacman.dead:
-                run = False
-                # self.reset()
-                self.reset_ghosts()
-                self.reset_gen()
-                # self.gen += 1
-            
-            # for i in self.ghosts:
-            #     print(i.timer, end=", ")
-            # print()
-            # for i in self.ghosts:
-            #     print(i.state, end=", ")
-            # print()
-
-            
-            # self.pacman_eating_ghosts()
-            
-            for event in pg.event.get():
-                if event.type == pg.QUIT:
+            timer = 0
+            self.clock = pg.time.Clock()
+            run = True
+            while run:
+                timer += self.clock.get_time()
+                self.gen_timer_for_moving += self.clock.get_time()
+                self.ghost_timer += self.clock.get_time()
+                if self.gen_timer_for_moving > 18000 or self.pacman.dead:
                     run = False
+                    self.reset()
+                    # self.reset_ghosts()
+                    # self.best_genomes = sorted(self.ge, key=lambda x: x.fitness, reverse=True)[:3]
+                    # genomes = sorted(self.ge, key=lambda x: x.fitness, reverse=True)[:3]
+                    # genomes = [(i + 1, b) for i, b in enumerate(genomes)]
+                    self.replay = False
+                #     with open ('winners.pkl', 'wb') as f:
+                #         pickle.dump(self.best_genomes, f)
+                #         f.close() 
+                    self.reset_gen()
                     self.gen += 1
-            self.screen.blit(bg, (0, 0))
-            
-            self.pacman_eating_dots()
-            self.draw_ghosts()
-            # self.pacman_eating_ghosts()
-            self.releasing_ghosts()
-            
-            # self.pacman.update(pg.key.get_pressed())
-            self.update_pacmen()
-            # self.pacman.show(self.screen)
-            # print(clock.get_fps())
-            self.redraw_pacmen()
-            pg.display.update()
-            self.clock.tick(60)
+                
+                # for i in self.ghosts:
+                #     print(i.timer, end=", ")
+                # print()
+                # for i in self.ghosts:
+                #     print(i.state, end=", ")
+                # print()
+
+                
+                # self.pacman_eating_ghosts()
+                
+                for event in pg.event.get():
+                    if event.type == pg.QUIT:
+                        run = False
+                        self.gen += 1
+                self.screen.blit(bg, (0, 0))
+                
+                self.pacman_eating_dots()
+                # self.draw_ghosts()
+                self.pacman_eating_ghosts()
+                self.releasing_ghosts()
+                
+                # self.pacman.update(pg.key.get_pressed())
+                self.update_pacmen()
+                # self.pacman.show(self.screen)
+                # print(clock.get_fps())
+                self.redraw_pacmen()
+                pg.display.update()
+                self.clock.tick(60)
 
 
 game = Game(display)

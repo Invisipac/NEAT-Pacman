@@ -16,6 +16,7 @@ class Pacman(Object):
         self.temp_dir = self.dir
         self.visited_squares = []
         self.time_since_move = 0
+        self.prev_moves = []
 
     def found_new_square(self):
         if self.map_pos not in self.visited_squares:
@@ -35,10 +36,10 @@ class Pacman(Object):
         else:
             return False
     def find_surrounding_walls(self):
-        up = 1 if get_map_letter((self.map_pos.x) % len(map[0]), self.map_pos.y - 1) in PATH else -1
-        left = 1 if get_map_letter((self.map_pos.x - 1) % len(map[0]), self.map_pos.y) in PATH else -1
-        right = 1 if get_map_letter((self.map_pos.x + 1) % len(map[0]), self.map_pos.y) in PATH else -1
-        down = 1 if get_map_letter((self.map_pos.x) % len(map[0]), self.map_pos.y + 1) in PATH else -1
+        up = 1 if get_map_letter((self.map_pos.x + self.dir[0]) % len(map[0]), self.map_pos.y + self.dir[1]) in PATH else -1
+        left = 1 if get_map_letter((self.map_pos.x + self.dir[1]) % len(map[0]), self.map_pos.y + self.dir[0]) in PATH else -1
+        right = 1 if get_map_letter((self.map_pos.x - self.dir[1]) % len(map[0]), self.map_pos.y - self.dir[0]) in PATH else -1
+        down = 1 if get_map_letter((self.map_pos.x - self.dir[0]) % len(map[0]), self.map_pos.y - self.dir[0]) in PATH else -1
 
         self.surrounding_walls = [int(up), int(left), int(right), int(down)]
 
@@ -53,6 +54,10 @@ class Pacman(Object):
         super().update_all("", True, self.dead)
         self.time_since_move += time
         self.find_surrounding_walls()
+        if len(self.prev_moves) < 2:
+            self.prev_moves.append(key)
+        else:
+            self.prev_moves = [key, self.prev_moves[0]]
         # print(self.not_move, "dd")
         if not self.dead and self.not_move == 0:
             if key == 'for':#keys[pg.K_w]:
