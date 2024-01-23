@@ -220,23 +220,35 @@ class Game:
             p.ai_update(move, self.clock.get_time())
             value = p.found_new_square()
             
+            print(idx, self.ge[idx].fitness, end='---------')
+
+            if not p.moved:
+                print('STUCK')
+                self.ge[idx].fitness -= 2
+
             if not p.dead:
+                print('ALIVE')
                 self.ge[idx].fitness += 0.5
             else:
+                print('DEAD')
                 self.ge[idx].fitness -= 10
 
             for ghost in self.ghosts:
                 if p.eat(ghost, 'ghost'):
                     if ghost.state == "Frightened":
+                        print('ATE')
                         self.ge[idx].fitness += 5
 
             if value is not None:
                 if value:
                     # self.visited_squares.append(p.map_pos.copy())
+                    print('NEW MOVE')
                     self.ge[idx].fitness += 0.5
                     # print('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
                 else:
-                    self.ge[idx].fitness -= 1.5
+                    print('OLD MOVE')
+                    self.ge[idx].fitness -= 5
+            # print(idx, self.ge[idx].fitness)
             # print(idx, p.prev_moves, self.ge[idx].fitness)
             # print(idx, p.visited_squares)
             # #     self.ge[idx].fitness += 0.2
@@ -264,7 +276,10 @@ class Game:
         # genomes = self.best_genome
         # if self.replay:
             # genomes = self.best_genomes[:3]
+        for i, g in genomes:
+            g.key = i 
         ge = sorted(genomes, key= lambda x : x[1].fitness if x[1].fitness else 0, reverse=True)[:3]
+        
         # genomes_ = genomes[:3]
         # print(genomes)
         for _, g in ge:

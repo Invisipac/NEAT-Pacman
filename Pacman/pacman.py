@@ -25,7 +25,7 @@ class Pacman(Object):
             # print('a')
             return True
         else:
-            if self.time_since_move > 500:
+            if self.time_since_move > 50:
                 self.time_since_move = 0
                 return False
             return None

@@ -25,12 +25,15 @@ class Evolution:
         
 
         p = neat.Population(config)
-
-        lst_pop = list(itervalues(p.population))
+        print(p.population)
+        # lst_pop = list(itervalues(p.population))
         for idx, n in enumerate(best_nomes):
-            lst_pop[idx].connections = n.connections
-            lst_pop[idx].nodes = n.nodes
-            lst_pop[idx].fitness = n.fitness
+            # lst_pop[idx].connections = n.connections
+            # lst_pop[idx].nodes = n.nodes
+            # lst_pop[idx].fitness = n.fitness
+            p.population[idx + 1].connections = n.connections
+            p.population[idx + 1].nodes = n.nodes
+            p.population[idx + 1].fitness = 0
 
         # p = neat.Checkpointer.restore_checkpoint("neat-checkpoint-49")
 
