@@ -134,5 +134,5 @@ class Object:
     def get_dir(self):
         pass
 
-    def show(self, screen):
+    def show(self, screen, nothing=False):
         pass

@@ -18,9 +18,9 @@ class Pacman(Object):
         else:
             return math.sqrt((self.map_pos.x - oj.map_pos.x) ** 2 + (self.map_pos.y - oj.map_pos.y) ** 2) <= 1
 
-    def update(self, keys):
+    def update(self, keys, allowed_to_move):
         super().update_all("", True, self.dead)
-        # print(self.not_move, "dd")
+
         if not self.dead and self.not_move == 0:
             if keys[pg.K_w]:
                 self.wannabe_dir = (0, -1)
@@ -31,37 +31,36 @@ class Pacman(Object):
             elif keys[pg.K_d]:
                 self.wannabe_dir = (1, 0)
 
-            self.moved = True
-            if not self.move(self.wannabe_dir):
-                self.moved = self.move(self.dir)
+            if allowed_to_move:
+                self.moved = True
+                if not self.move(self.wannabe_dir):
+                    self.moved = self.move(self.dir)
 
-
-    def show(self, screen):
+    def show(self, screen, nothing=False):
         frame_translation = {(1, 0): 0, (-1, 0): 1, (0, -1): 2, (0, 1): 3}
 
         if not self.dead:
             if self.frame != 2:
                 display.blit(self.animation[0][frame_translation[self.dir]][self.frame],
-                             (self.pos.x - self.size / 2, self.pos.y - self.size / 2))
+                             (self.pos.x - self.size / 2, self.pos.y + (offset * RATIO[1]) - self.size / 2))
             else:
-                display.blit(self.animation[0][4][0], (self.pos.x - self.size / 2, self.pos.y - self.size / 2))
+                display.blit(self.animation[0][4][0], (self.pos.x - self.size / 2, self.pos.y + (offset * RATIO[1]) - self.size / 2))
 
             if self.wannabe_dir == (0, -1):
-                pg.draw.rect(display, (255, 242, 149), (self.pos.x - 10, self.pos.y - 32, 20, 4))
-                pg.draw.rect(display, (255, 242, 149), (self.pos.x - 6, self.pos.y - 36, 12, 4))
-                pg.draw.rect(display, (255, 242, 149), (self.pos.x - 2, self.pos.y - 40, 4, 4))
+                pg.draw.rect(display, (255, 242, 149), (self.pos.x - 10, self.pos.y + (offset * RATIO[1]) - 32, 20, 4))
+                pg.draw.rect(display, (255, 242, 149), (self.pos.x - 6, self.pos.y + (offset * RATIO[1]) - 36, 12, 4))
+                pg.draw.rect(display, (255, 242, 149), (self.pos.x - 2, self.pos.y + (offset * RATIO[1]) - 40, 4, 4))
             elif self.wannabe_dir == (0, 1):
-                pg.draw.rect(display, (255, 242, 149), (self.pos.x - 10, self.pos.y + 28, 20, 4))
-                pg.draw.rect(display, (255, 242, 149), (self.pos.x - 6, self.pos.y + 32, 12, 4))
-                pg.draw.rect(display, (255, 242, 149), (self.pos.x - 2, self.pos.y + 36, 4, 4))
+                pg.draw.rect(display, (255, 242, 149), (self.pos.x - 10, self.pos.y + (offset * RATIO[1]) + 28, 20, 4))
+                pg.draw.rect(display, (255, 242, 149), (self.pos.x - 6, self.pos.y + (offset * RATIO[1]) + 32, 12, 4))
+                pg.draw.rect(display, (255, 242, 149), (self.pos.x - 2, self.pos.y + (offset * RATIO[1]) + 36, 4, 4))
             elif self.wannabe_dir == (-1, 0):
-                pg.draw.rect(display, (255, 242, 149), (self.pos.x - 32, self.pos.y - 10, 4, 20))
-                pg.draw.rect(display, (255, 242, 149), (self.pos.x - 36, self.pos.y - 6, 4, 12))
-                pg.draw.rect(display, (255, 242, 149), (self.pos.x - 40, self.pos.y - 2, 4, 4))
+                pg.draw.rect(display, (255, 242, 149), (self.pos.x - 32, self.pos.y + (offset * RATIO[1]) - 10, 4, 20))
+                pg.draw.rect(display, (255, 242, 149), (self.pos.x - 36, self.pos.y + (offset * RATIO[1]) - 6, 4, 12))
+                pg.draw.rect(display, (255, 242, 149), (self.pos.x - 40, self.pos.y + (offset * RATIO[1]) - 2, 4, 4))
             elif self.wannabe_dir == (1, 0):
-                pg.draw.rect(display, (255, 242, 149), (self.pos.x + 28, self.pos.y - 10, 4, 20))
-                pg.draw.rect(display, (255, 242, 149), (self.pos.x + 32, self.pos.y - 6, 4, 12))
-                pg.draw.rect(display, (255, 242, 149), (self.pos.x + 36, self.pos.y - 2, 4, 4))
+                pg.draw.rect(display, (255, 242, 149), (self.pos.x + 28, self.pos.y + (offset * RATIO[1]) - 10, 4, 20))
+                pg.draw.rect(display, (255, 242, 149), (self.pos.x + 32, self.pos.y + (offset * RATIO[1]) - 6, 4, 12))
+                pg.draw.rect(display, (255, 242, 149), (self.pos.x + 36, self.pos.y + (offset * RATIO[1]) - 2, 4, 4))
         else:
-            print(self.frame)
-            display.blit(self.animation[1][self.frame], (self.pos.x - 45 / 2, self.pos.y - 45 / 2))
+            display.blit(self.animation[1][self.frame], (self.pos.x - 45 / 2, self.pos.y + (offset * RATIO[1]) - 45 / 2))

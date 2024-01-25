@@ -33,7 +33,7 @@ class BlueGhost(Ghost):
         super().__init__(map_pos, size, speed, animation, frame_lim)
         self.trapped = True
         self.dir = (0, 1)
-        self.point_limit = 300
+        self.point_limit = 30
 
     def chase_behaviour(self, ghosts, pacman):
         red_ghost_loc = ghosts[0].map_pos

@@ -25,6 +25,9 @@ class Ghost(Object):
         self.count_flash = 0
         self.outside_box = self.map_pos.x < 10 or self.map_pos.x > 16 or self.map_pos.y < 12 or self.map_pos.y > 16
 
+        self.score = 0
+        self.show_score = False
+
     def chase_behaviour(self, ghosts, pacman):
         pass
 
@@ -184,7 +187,7 @@ class Ghost(Object):
                 self.timer = 0
 
         elif self.state == "Dead":
-            self.speed = 8
+            self.speed = 6
             self.dead_behaviour()
 
         if self.trapped:
@@ -204,22 +207,23 @@ class Ghost(Object):
 
         self.state_manager(ghosts, time, pacman, ghost_timer)
 
-        if self.map_pos.y == 14 and (self.map_pos.x <= 5 or self.map_pos.x >= 22):
+        if self.map_pos.y == 14 and (self.map_pos.x <= 5 or self.map_pos.x >= 22) and self.state != "Dead":
             self.speed = 12
 
         super().update_all(self.state, self.outside_box)
         self.move(self.dir, self.trapped, self.possible_path)
 
-    def show(self, screen):
+    def show(self, screen, nothing=False):
         frame_translation = {(1, 0): 0, (-1, 0): 1, (0, -1): 2, (0, 1): 3}
         if self.state in ["Chase", "Scattered"]:
             screen.blit(self.animation[frame_translation[(self.dir[0], self.dir[1])]][self.frame],
-                        (self.pos.x - self.size / 2, self.pos.y - self.size / 2))
+                        (self.pos.x - self.size / 2, self.pos.y + (offset * RATIO[1]) - self.size / 2))
         elif self.state == "Frightened":
             screen.blit(dead_ghost_sprites[1 if self.turn_off else 0][self.frame],
-                        (self.pos.x - self.size / 2, self.pos.y - self.size / 2))
+                        (self.pos.x - self.size / 2, self.pos.y + (offset * RATIO[1]) - self.size / 2))
         else:
-            screen.blit(dead_ghost_sprites[2][frame_translation[(self.dir[0], self.dir[1])]],
-                        (self.pos.x - self.size / 2, self.pos.y - self.size / 2))
+            if not nothing:
+                screen.blit(dead_ghost_sprites[2][frame_translation[(self.dir[0], self.dir[1])]],
+                            (self.pos.x - self.size / 2, self.pos.y + (offset * RATIO[1]) - self.size / 2))
 
         # pygame.draw.circle(screen, (255, 0, 0), (self.target[0] * RATIO[0] + RATIO[0] / 2, self.target[1] * RATIO[1] + RATIO[1] / 2), self.size / 2)
