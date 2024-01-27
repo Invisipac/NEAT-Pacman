@@ -3,6 +3,7 @@ import pygame.image
 
 pg.init()
 pygame.font.init()
+pygame.mixer.init()
 
 RATIO = (24, 24)
 GRID_SIZE = (28, 36.5)
@@ -51,7 +52,8 @@ def text(surface, _string, color, pos, mode, _font=font):
     surface.blit(string, string_rect)
 
 
-bg = loadify(f"{file_fix}Sprites//Background//bg.png")
+# bg = loadify(f"{file_fix}Sprites//Background//bg1.png")
+bg = [loadify(f"{file_fix}Sprites//Background//bg{i}.png") for i in range(2)]
 
 ghost_sprites = []
 ghost_names = ["Blinky", "Pinky", "Inky", "Clyde"]
@@ -83,3 +85,11 @@ for i in range(14):
     pacman_sprites[1].append(loadify(f"{file_fix}Sprites//Pacman//Dying-animation//pacman{i}.png"))
 
 lives = pygame.transform.scale(pacman_sprites[0][1][0], (32, 32))
+
+chomp = [pygame.mixer.Sound(f"{file_fix}Sprites/Sounds/Chomp{i}.wav") for i in range(2)]
+siren = pygame.mixer.Sound(f"{file_fix}Sprites/Sounds/Siren.mp3")
+retreat = pygame.mixer.Sound(f"{file_fix}Sprites/Sounds/Retreating.wav")
+eat_ghost = pygame.mixer.Sound(f"{file_fix}Sprites/Sounds/eat_ghost.wav")
+death = pygame.mixer.Sound(f"{file_fix}Sprites/Sounds/Death.wav")
+intro = pygame.mixer.Sound(f"{file_fix}Sprites/Sounds/Intro.wav")
+win_sound = pygame.mixer.Sound(f"{file_fix}Sprites/Sounds/Extra-life.mp3")
