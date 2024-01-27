@@ -1,6 +1,8 @@
 import pygame as pg
 from random import randint
 
+#obstacle class and inherited obstacles bird and cacti
+#the obstacles are just rects with different positions and dimensions
 class Obstacle:
     def __init__(self, pos: tuple, size: tuple, speed: tuple, colour: tuple) -> None:
         self.pos, self.size = pg.math.Vector2(*pos), size
