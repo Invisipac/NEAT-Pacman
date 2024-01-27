@@ -15,8 +15,9 @@ WIDTH, HEIGHT = RATIO[0] * GRID_SIZE[0], RATIO[1] * GRID_SIZE[1]
 
 display = pg.display.set_mode((WIDTH, HEIGHT))
 
-file_fix = "./Pacman/"
-# file_fix = ""
+# comment / uncomment this lines based on how your IDE works
+# file_fix = "./Pacman/"
+file_fix = ""
 
 map = open(f"{file_fix}true-map.txt", "r").read().split()
 
@@ -84,6 +85,8 @@ for i in range(14):
     pacman_sprites[1].append(loadify(f"{file_fix}Sprites//Pacman//Dying-animation//pacman{i}.png"))
 
 lives = pygame.transform.scale(pacman_sprites[0][1][0], (32, 32))
+
+intro_sprites = [loadify(f"{file_fix}Sprites//Intro//intro{i}.png") for i in range(2)]
 
 chomp = [pygame.mixer.Sound(f"{file_fix}Sprites/Sounds/Chomp{i}.wav") for i in range(2)]
 siren = pygame.mixer.Sound(f"{file_fix}Sprites/Sounds/Siren.mp3")
