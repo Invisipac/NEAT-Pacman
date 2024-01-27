@@ -1,6 +1,6 @@
 import random
 from random import randint
-
+import visualize
 import neat
 import pygame as pg
 from pygame.math import Vector2 as vec
@@ -218,6 +218,15 @@ class Game:
         self.p.add_reporter(stats)
 
         # get the winner of the population
-        winner = self.p.run(self.main, 50)
+        winner = self.p.run(self.main, 2)
+
+        winner_net = neat.nn.FeedForwardNetwork.create(winner, self.config)
+
+        visualize.draw_net(self.config, winner, True)
+        # visualize.draw_net(self.config, winner, True)
+        visualize.plot_stats(stats, ylog=False, view=True)
+        visualize.plot_species(stats, view=True)
+
+
         self.saveGenome(winner)  # fitness function, num of generations
         print(winner)
