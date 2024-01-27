@@ -3,21 +3,23 @@ import math
 from Object import Object
 from variables import *
 
-
+#pacman class inherits from object class 
 class Pacman(Object):
     def __init__(self, map_pos, size, speed, animation, frame_lim, lives=3, points=0):
         super().__init__(map_pos, size, speed, animation, frame_lim, lives)
-        self.wannabe_dir = (0, -1)
+        self.wannabe_dir = (0, -1) #wannabe direction dictates where pacman will move once he reaches an intersection
         self.points = points
         self.dead = False
         self.not_move = 0
 
+    #function to check if pacman has eaten a ghost or a dot by checking the distance between the two 
     def eat(self, oj, tp="dot"):
         if tp == "dot":
             return self.map_pos == oj.map_pos
         else:
             return math.sqrt((self.map_pos.x - oj.map_pos.x) ** 2 + (self.map_pos.y - oj.map_pos.y) ** 2) <= 1
 
+    #update function takes key input and changes pacman's wannabe direction
     def update(self, keys, allowed_to_move):
         super().update_all("", True, self.dead)
 
@@ -36,7 +38,7 @@ class Pacman(Object):
                 if not self.move(self.wannabe_dir):
                     self.moved = self.move(self.dir)
 
-    def show(self, screen, nothing=False):
+    def show(self, screen, nothing=False): #function to display and animate pacman
         frame_translation = {(1, 0): 0, (-1, 0): 1, (0, -1): 2, (0, 1): 3}
 
         if not self.dead:

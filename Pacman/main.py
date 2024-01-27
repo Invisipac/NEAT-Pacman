@@ -7,19 +7,22 @@ from variables import *
 
 base_speed = 8
 
-
+#game class that combines everything together and runs the game
 class Game:
     def __init__(self, screen) -> None:
-        # intro.play()
+        #initialize pacman and all the ghosts
         self.pacman = Pacman((13.5, 23), 39, RATIO[0] / 4, pacman_sprites, 3, 3)
         self.redGhost = RedGhost((13.5, 11), 42, RATIO[0] / 3, ghost_sprites[0], 2)
         self.blueGhost = BlueGhost((11.5, 14), 42, RATIO[0] / 3, ghost_sprites[2], 2)
         self.pinkGhost = PinkGhost((13.5, 14), 42, RATIO[0] / 3, ghost_sprites[1], 2)
         self.orangeGhost = OrangeGhost((15.5, 14), 42, RATIO[0] / 3, ghost_sprites[3], 2)
-        # self.ghosts = [self.redGhost]
         self.ghosts = [self.redGhost, self.pinkGhost, self.blueGhost, self.orangeGhost]
+
+        #create game variables
         self.clock = pg.time.Clock()
         self.screen = screen
+
+        #set up dots and high score
         self.dots = []
         self.score = 0
         try:
@@ -29,6 +32,7 @@ class Game:
         except OSError:
             self.high_score = 0
 
+        #variables to control points and win conditions
         self.ghost_kill_count = 0
         self.ghost_timer = 0
         self.ghost_counter = 1
@@ -44,6 +48,7 @@ class Game:
         self.played = (False, "a")
         self.once = True
 
+        #initialize list of dots
         for j, y in enumerate(map):
             for i, x in enumerate(y):
                 if x in DOTS:
@@ -53,6 +58,7 @@ class Game:
 
         intro.play()
 
+    #function to reset dots and game
     def win_reset(self):
         self.reset(False)
         self.dots = []
@@ -63,7 +69,8 @@ class Game:
                 if x in POWER_DOTS:
                     self.dots.append(Dot((i, j), True))
         self.win = False
-
+    
+    #function to reset game
     def reset(self, death=True):
         self.pacman = Pacman((13.5, 23), 39, RATIO[0] / 4, pacman_sprites, 3,
                              (self.pacman.lives - 1) if death else self.pacman.lives + 1)
@@ -77,7 +84,7 @@ class Game:
         self.ghost_counter = 1
         self.point_counter = 0
         self.starting_game_timer = 0
-
+    
     def draw_dots(self):
         # drawing the dots
         for i in range(len(self.dots) - 1, -1, -1):
@@ -98,6 +105,7 @@ class Game:
     def draw_pacman(self):
         self.pacman.show(self.screen)
 
+    #function that controls how pacman interacts with the dots
     def pacman_dot_management(self):
         slow_pacman = False
         for i in range(len(self.dots) - 1, -1, -1):
@@ -151,6 +159,7 @@ class Game:
         if len(self.dots) == 0:
             self.pacman.not_move = 0
 
+    #function that controls how pacman interacts with the ghosts 
     def pacman_ghosts_management(self):
         if not self.pacman.dead:
             someone_frightened = False
@@ -193,7 +202,7 @@ class Game:
                     retreat.stop()
                     self.once = False
 
-
+    #function that controls pacman's movement and death
     def update_pacman(self, keys, allowed_to_move):
         # death management
         if self.pacman.frame == 13:
@@ -203,6 +212,7 @@ class Game:
 
         self.pacman.update(keys, allowed_to_move)
 
+    #function that releases the ghosts from the box based on certain times
     def releasing_ghosts(self):
         release_ghosts = [0, 7, 17, 32]
 
@@ -219,6 +229,7 @@ class Game:
                 if self.ghost_counter < 3:
                     self.ghost_counter += 1
 
+    #main function that runs the game itself
     def main(self):
         timer = 0
         self.clock = pg.time.Clock()
@@ -231,6 +242,7 @@ class Game:
             if self.win:
                 self.win_timer += self.clock.get_time()
 
+            #play sound effects at different points in the game
             if self.win_timer >= win_sound.get_length() * 1000:
                 if self.win:
                     self.played = (False, "a")
@@ -253,6 +265,7 @@ class Game:
                             retreat.play(-1).set_volume(0.5)
                         self.played = (True, "")
 
+                    #call all relevant functions for pacman and the ghosts
                     self.pacman_dot_management()
                     self.pacman_ghosts_management()
                     self.releasing_ghosts()
@@ -261,6 +274,7 @@ class Game:
                                    self.starting_game_timer > (
                                        2000 if not self.first_play else intro.get_length() * 1000) and self.pacman_ghost_pause > 500)
 
+                #check if you have lost all of your lives and write a new high score to the txt file
                 if self.pacman.lives == 0:
                     self.game_over = True
                     if self.score > self.high_score:
@@ -269,6 +283,7 @@ class Game:
                         file.write(str(self.high_score))
                         file.close()
 
+                #check if all dots have been eaten and you won
                 if len(self.dots) == 0:
                     self.win = True
                     self.win_timer = 0
@@ -276,10 +291,13 @@ class Game:
                     siren.stop()
                     retreat.stop()
 
+
+            #play win sound 
             self.screen.fill((0, 0, 0))
             self.screen.blit(bg[0 if self.win_timer > win_sound.get_length()*1000 else (self.win_timer//300) % 2], (0, 0 + (offset * RATIO[1])))
             self.draw_dots()
 
+            #draw to the screen if game is not over
             if not self.game_over:
                 self.draw_ghosts(self.pacman_ghost_pause < 500)
                 if self.pacman_ghost_pause > 500:
@@ -288,9 +306,10 @@ class Game:
                 for i in range(self.pacman.lives):
                     self.screen.blit(lives, (10 + i * 37, 9 + RATIO[1] * (31 + offset)))
 
+        #draw other text relevant to the game
                 if self.starting_game_timer < (2000 if not self.first_play else intro.get_length()*1000):
                     text(self.screen, "READY!", (255, 255, 0), (336, 420 + (offset * RATIO[1])), "center", font2)
-
+        
             else:
                 text(self.screen, "GAME  OVER", (255, 0, 0), (336, 420 + (offset * RATIO[1])), "center", font2)
 

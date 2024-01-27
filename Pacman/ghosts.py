@@ -1,6 +1,8 @@
 from ghost import Ghost
 
-
+#individual ghost classes that inherit from ghost
+#they are almost the same as the base class expect for
+#different point limits, scatter and chase behaviour, and starting direction
 class RedGhost(Ghost):
     def __init__(self, map_pos, size, speed, animation, frame_lim):
         super().__init__(map_pos, size, speed, animation, frame_lim)

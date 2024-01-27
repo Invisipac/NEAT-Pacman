@@ -5,6 +5,9 @@ pg.init()
 pygame.font.init()
 pygame.mixer.init()
 
+#file with general constants pertaining to the game such as screen size, grid size, and path
+#also loads all the sprites and the sounds
+
 RATIO = (24, 24)
 GRID_SIZE = (28, 36.5)
 offset = 3.5
@@ -12,8 +15,8 @@ WIDTH, HEIGHT = RATIO[0] * GRID_SIZE[0], RATIO[1] * GRID_SIZE[1]
 
 display = pg.display.set_mode((WIDTH, HEIGHT))
 
-# file_fix = "./Pacman/"
-file_fix = ""
+file_fix = "./Pacman/"
+# file_fix = ""
 
 map = open(f"{file_fix}true-map.txt", "r").read().split()
 
@@ -33,10 +36,8 @@ times = [7000, 20000, 7000, 20000, 5000, 20000, 5000]
 def get_map_letter(x, y):
     return map[int(y)][int(x)]
 
-
 def loadify(filename):
     return pygame.image.load(filename).convert_alpha()
-
 
 def text(surface, _string, color, pos, mode, _font=font):
     string = _font.render(_string, True, color)
@@ -51,8 +52,6 @@ def text(surface, _string, color, pos, mode, _font=font):
 
     surface.blit(string, string_rect)
 
-
-# bg = loadify(f"{file_fix}Sprites//Background//bg1.png")
 bg = [loadify(f"{file_fix}Sprites//Background//bg{i}.png") for i in range(2)]
 
 ghost_sprites = []
